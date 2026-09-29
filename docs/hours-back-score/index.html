@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hours Back Score (test)</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Test build of the Hours Back Score.">
+</head>
+<body>
+<title>Hours Back Score (test)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap">
+<style>
+:root {
+  --paper: #FBF8F3;
+  --paper-2: #F2ECE3;
+  --ink: #221B1E;
+  --ink-2: #5E5257;
+  --line: #E2D9CF;
+  --accent: #750D37;
+  --accent-ink: #FFFFFF;
+  --green: #4F7D5C;
+  --sage: #BFD4AD;
+  --sage-ink: #24371F;
+  --warn: #9A5B1F;
+  --focus: #2F6FDE;
+  --serif: "Georgia Pro", Georgia, "Times New Roman", serif;
+  --sans: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+  --max: 640px;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #17131A;
+    --paper-2: #221C26;
+    --ink: #F3ECE6;
+    --ink-2: #B8ACB0;
+    --line: #3A3139;
+    --accent: #E38DAB;
+    --accent-ink: #2A0713;
+    --green: #8FBF9A;
+    --sage: #2F4A34;
+    --sage-ink: #D9EBCF;
+    --warn: #E0A860;
+    --focus: #8BB4FF;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #17131A;
+  --paper-2: #221C26;
+  --ink: #F3ECE6;
+  --ink-2: #B8ACB0;
+  --line: #3A3139;
+  --accent: #E38DAB;
+  --accent-ink: #2A0713;
+  --green: #8FBF9A;
+  --sage: #2F4A34;
+  --sage-ink: #D9EBCF;
+  --warn: #E0A860;
+  --focus: #8BB4FF;
+}
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+.pss-progress {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  height: 4px; background: var(--line);
+}
+.pss-progress > div { height: 100%; width: 0; background: var(--green); transition: width .3s ease; }
+
+.pss-wrap {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding-inline: 20px;
+  padding-block: 28px 56px;
+}
+.pss-brand {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2);
+  margin-bottom: 28px;
+}
+.pss-brand b { color: var(--accent); font-weight: 700; letter-spacing: .1em; }
+
+h1, h2 {
+  font-family: var(--serif); font-weight: 400; line-height: 1.2; text-wrap: balance; margin: 0 0 12px;
+}
+h1 { font-size: clamp(30px, 5vw, 40px); }
+h2 { font-size: clamp(22px, 4vw, 28px); }
+p { margin: 0 0 14px; max-width: 62ch; }
+.muted { color: var(--ink-2); }
+.small { font-size: 14px; }
+.eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 10px; }
+
+.screen { display: grid; gap: 16px; }
+.screen[hidden] { display: none; }
+
+.options { display: grid; gap: 10px; margin-top: 6px; }
+.opt {
+  display: block; width: 100%; text-align: left;
+  font: inherit; color: var(--ink); background: var(--paper-2);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 16px; cursor: pointer; line-height: 1.45;
+  transition: border-color .15s, background .15s;
+}
+.opt:hover { border-color: var(--accent); }
+.opt[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
+.field { display: grid; gap: 8px; }
+label { font-weight: 600; }
+input[type="text"], input[type="email"], textarea {
+  font: inherit; color: var(--ink); background: var(--paper-2);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 12px 14px; width: 100%;
+}
+textarea { min-height: 96px; resize: vertical; font-family: var(--serif); font-size: 17px; }
+.help { font-size: 13.5px; color: var(--ink-2); line-height: 1.5; max-width: 62ch; }
+.count { font-size: 12px; color: var(--ink-2); text-align: right; font-variant-numeric: tabular-nums; }
+
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 6px; }
+.btn {
+  font: inherit; font-weight: 600; font-size: 15px;
+  background: var(--accent); color: var(--accent-ink);
+  border: 0; border-radius: 999px; padding: 12px 22px; cursor: pointer;
+}
+.btn:disabled { opacity: .5; cursor: default; }
+.btn.ghost { background: transparent; color: var(--ink-2); border: 1px solid var(--line); }
+.link { background: none; border: 0; padding: 0; font: inherit; color: var(--ink-2); text-decoration: underline; cursor: pointer; }
+
+.notice {
+  background: var(--sage); color: var(--sage-ink);
+  border-radius: var(--radius); padding: 12px 14px; font-size: 14px;
+}
+.error { color: var(--warn); font-size: 14px; }
+
+.gate { position: relative; }
+.blur-band {
+  font-family: var(--serif); font-size: 26px; filter: blur(7px); user-select: none; color: var(--accent);
+  margin-bottom: 6px;
+}
+
+/* Results */
+.score-hero { display: grid; grid-template-columns: 132px 1fr; gap: 20px; align-items: center; }
+@media (max-width: 460px) { .score-hero { grid-template-columns: 1fr; } }
+.ring { width: 132px; height: 132px; }
+.ring text { font-family: var(--serif); fill: var(--ink); }
+.band-name { font-family: var(--serif); font-size: 30px; line-height: 1.1; color: var(--accent); }
+.band-tag { color: var(--ink-2); }
+
+.dims { display: grid; gap: 10px; margin-top: 4px; }
+.dim { display: grid; grid-template-columns: 96px 1fr 44px; gap: 12px; align-items: center; font-size: 14px; }
+.dim .bar { height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.dim .bar > i { display: block; height: 100%; background: var(--green); }
+.dim.weak .bar > i { background: var(--accent); }
+.dim .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.dim .name { font-weight: 600; }
+.dim.weak .name { color: var(--accent); }
+
+.card { border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; background: var(--paper-2); }
+.card h3 { font-family: var(--serif); font-weight: 400; font-size: 20px; margin: 0 0 8px; }
+.quote { font-family: var(--serif); font-size: 17px; border-left: 3px solid var(--sage); padding-left: 12px; margin: 6px 0 8px; }
+.pill { display: inline-block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: var(--sage); color: var(--sage-ink); }
+.disclosure { font-size: 13.5px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 12px; }
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -2px; margin-right: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* The ask */
+.card.offer { border-color: var(--accent); border-width: 2px; }
+.card.offer .btn { display: block; width: 100%; box-sizing: border-box; text-align: center; }
+
+</style>
+<div id="progress" class="pss-progress" aria-hidden="true"><div></div></div>
+<main class="pss-wrap">
+  <div class="pss-brand"><b>Hours Back Score</b><span>Josh Atlas · Product Management Circle</span></div>
+  <div id="app" aria-live="polite"></div>
+</main>
+<script>window.PSS_CONFIG = {"test":true,"videos":{},"offer":{"name":"Hours Back Pilot","when":"Four weeks. Start date set on the scoping call.","what":"One recurring task from your week. We build a reusable AI workflow around it, inside your company's rules, with your judgment in the loop. You leave with a working deliverable, a one-page system doc, and the hours measured before and after.","seats":"Three seats this round","price":"","deadline":"","button":"Book a 20-minute scoping call","url":"https://calendly.com/REPLACE"},"secondary":{"byhand":null,"adhoc":null,"systematic":null,"operator":{"label":"Thinking about your team rather than yourself? Same call, bring one PM's task.","url":"https://calendly.com/REPLACE"}}};</script>
+<script>window.PSS_QUESTIONS = {"slug":"hours-back-score","title":"Hours Back Score","token":"[task]","kitPrefix":"hbs","version":"2026-09-28","dimensions":["visibility","inputs","rules","reuse","judgment"],"dimensionNames":{"visibility":"Visibility","inputs":"Inputs","rules":"Rules","reuse":"Reuse","judgment":"Judgment"},"bands":[{"id":"byhand","min":0,"max":11,"name":"By hand","tagline":"Everything runs through you, every time"},{"id":"adhoc","min":12,"max":18,"name":"Ad hoc","tagline":"AI helps when you remember to ask it"},{"id":"systematic","min":19,"max":25,"name":"Systematic","tagline":"You have pieces of a workflow. It isn't one yet"},{"id":"operator","min":26,"max":30,"name":"Operator","tagline":"You run a system. The question is what's next"}],"setup":[{"id":"role","prompt":"Which is closest to your situation?","options":[{"id":"multi_pm","text":"PM with more than one product or area"},{"id":"single_pm","text":"PM with one product"},{"id":"lead","text":"I manage PMs"},{"id":"founder","text":"Founder doing the PM work"},{"id":"other","text":"Something else"}]},{"id":"initiative","prompt":"What's the recurring task that eats your week?","placeholder":"the weekly status update across three products","fallback":"that task","help":"One task, the kind that comes back every week or every month: the status update, the PRD you draft again, the customer feedback you still haven't sorted, the QBR pack. Say it the way you'd say it to a peer at another company: no internal codenames, no customer names, no numbers. I use it to write the questions around your actual week. It's stored with your score and nothing else. Two questions ask you for a sentence; those are scored against my rubric by an AI model and are not used to train anything. Email me any time and I'll delete all of it.","maxLength":80}],"instruction":"These ask what actually happens, not what you'd like to happen. If a situation hasn't come up with [task] yet, pick what you'd most likely do.","questions":[{"id":"q1","dimension":"visibility","prompt":"If I asked how many hours [task] took you last month, what could you tell me?","options":[{"text":"A close estimate. I know roughly where it lands.","score":2},{"text":"It varies too much month to month to put a number on.","score":1},{"text":"A number. I've tracked it, at least once.","score":3},{"text":"I've never thought of it as one task. It's just part of the job.","score":0}]},{"id":"q2","dimension":"inputs","prompt":"Where do the inputs for [task] live right now?","options":[{"text":"In a few places. I gather them myself each time so nothing gets missed.","score":1},{"text":"In one place I could point a tool at: a doc, a tracker, a folder.","score":3},{"text":"Mostly in my head, which is faster than writing it all down.","score":0},{"text":"In a couple of known places, and I copy them into one doc before I start.","score":2}]},{"id":"q3","dimension":"inputs","prompt":"The last time you did [task], how did you start?","options":[{"text":"From last time's version, edited.","score":2},{"text":"From a blank page, so it stays fresh and honest.","score":0},{"text":"From a template or checklist I keep for it.","score":3},{"text":"From whatever came in that week, in the order it came in.","score":1}]},{"id":"q4","dimension":"rules","prompt":"What do you know about your company's rules for using AI tools on work content?","options":[{"text":"I know which tool is approved. I'm less sure what data is allowed in it.","score":2},{"text":"I've asked around. Nobody seems sure, so I keep it to non-sensitive stuff.","score":1},{"text":"I've read the policy. I know the sanctioned tools and what data can go in.","score":3},{"text":"I haven't looked into it yet.","score":0}]},{"id":"q5","dimension":"rules","prompt":"Who at your company knows you use AI for [task]?","options":[{"text":"Nobody. It's my edge, and I'd rather not invite questions.","score":1},{"text":"My manager. I've shown them the output and how it's made.","score":3},{"text":"A couple of peers I trust.","score":2},{"text":"I don't use AI for [task] yet.","score":0}]},{"id":"q6","dimension":"reuse","prompt":"The last time a prompt worked well for something like [task], what happened to it?","options":[{"text":"I rewrote it from memory the next time. It's usually close enough.","score":1},{"text":"It's in the chat history. I scroll back and find it.","score":2},{"text":"I saved it as a reusable prompt, template, project or skill.","score":3},{"text":"I don't reuse prompts. Each week is different.","score":0}]},{"id":"q7","dimension":"reuse","prompt":"How much of [task] does a tool do before you touch it?","options":[{"text":"It helps with pieces when I ask: a summary here, a rewording there.","score":2},{"text":"None. I do it by hand, and honestly that's faster.","score":0},{"text":"It produces a first draft from the inputs. I edit and decide.","score":3},{"text":"I use it to check my work after I've done it.","score":1}]},{"id":"q8","dimension":"judgment","prompt":"The last AI draft you used for something like [task]: how did you decide it was good enough?","options":[{"text":"Read it through. It sounded right.","score":1},{"text":"Checked it against what the reader needs to decide, and fixed what was missing.","score":3},{"text":"Compared it to the last version I'd done by hand.","score":2},{"text":"Sent it. The reader would tell me if something was off.","score":0}]}],"written":[{"id":"w1","dimension":"visibility","prompt":"In one sentence, describe [task] the way you'd hand it to a new hire: what goes in, what comes out, and who reads it.","placeholder":"Every Friday I pull the three product trackers and last week's escalations into a one-page update that the VP of Product reads before her Monday staff meeting.","maxLength":240,"rubric":[{"score":3,"text":"Names the inputs, the output, and who consumes it (or what decision it feeds). Someone else could start from this sentence."},{"score":2,"text":"Two of the three: inputs and output, or output and reader, but one is missing."},{"score":1,"text":"One of the three, or all three so vaguely that a new hire would have to ask."},{"score":0,"text":"A label, not a description (\"the weekly update\"), or blank."}],"examples":[{"score":3,"text":"Every Friday I pull the three product trackers and last week's escalations into a one-page update that the VP of Product reads before her Monday staff meeting."},{"score":2,"text":"I turn the trackers and the escalation list into a one-page status update every Friday."},{"score":1,"text":"I write the weekly status update for leadership."},{"score":0,"text":"The weekly update."}]},{"id":"w2","dimension":"judgment","prompt":"In one sentence, what would make you reject an AI draft of [task]?","placeholder":"If it reports a date or a number without the source I can check it against, or if it buries the one risk my VP actually needs to see.","maxLength":240,"rubric":[{"score":3,"text":"A specific, checkable criterion tied to the reader or the decision the output feeds (a missing risk, an unsourced number, a recommendation the reader can't act on)."},{"score":2,"text":"A specific, checkable criterion, but not tied to the reader or decision (\"if it invents a number\")."},{"score":1,"text":"A general quality statement (\"if it's inaccurate,\" \"if it doesn't sound like me\")."},{"score":0,"text":"\"I'd know it when I see it,\" no criterion, or blank."}],"examples":[{"score":3,"text":"If it states a delivery date without the tracker line I can check it against, or hides the one risk my VP needs to see before her staff meeting."},{"score":2,"text":"If it makes up a number or a date that isn't in the inputs."},{"score":1,"text":"If it's inaccurate or doesn't sound like me."},{"score":0,"text":"I'd know it when I read it."}]}],"bandCopy":{"byhand":{"headline":"Everything runs through you, every time.","body":"Your answers on [task] describe work that starts from scratch, lives in your head or your inbox, and gets done by hand because that feels faster. It is faster, once. The cost is that it never gets cheaper, and every week it competes with the work only you can do.","next":"You have the most hours to get back, and the shortest path: one task, mapped, with its inputs put in one place before any tool touches it. That is week one of the pilot."},"adhoc":{"headline":"AI helps when you remember to ask it.","body":"You use a tool on [task] the way most PMs do: pieces, when you think of it, with a prompt you rewrite each time. The hours come back in small change. Nothing compounds, because nothing is saved, measured, or checked against what the reader needs.","next":"The pilot turns one of those pieces into a workflow you keep: inputs in one place, a saved prompt or skill, a check you can name, and the hours counted before and after."},"systematic":{"headline":"You have pieces of a workflow. It isn't one yet.","body":"You've saved what works, you know roughly what [task] costs, and you know the rules you're working inside. What's missing is the part that makes it a system: the inputs feeding it without you, and a stated bar the draft has to clear before it's yours.","next":"Four weeks is enough to finish it, document it so it runs without you babysitting it, and measure the hours honestly. Then it's a story you can tell your manager, and your next interviewer."},"operator":{"headline":"You run a system. The question is what's next.","body":"Your answers on [task] describe a workflow with inputs, reuse, a named check, and someone else who knows it exists. That puts you ahead of most PMs I talk to. The leverage now is the next task, and the PMs around you who are still doing this by hand.","next":"Take the pilot on your second-worst task, or send a PM on your team who should take this score. I run the same method with teams, inside the company's rules."}},"dimensionCopy":{"visibility":"Visibility is knowing what [task] costs and what it's for. Your answers say it's part of the job rather than a thing with hours and a reader. Write the one-sentence handoff (what goes in, what comes out, who reads it) and time it once. That sentence is the spec for everything after.","inputs":"Inputs are where the raw material for [task] lives before you start. Your answers say it's scattered, or in your head, so every run starts with a hunt. Put the inputs in one place a tool could read (a doc, a tracker, a folder), even if you keep doing the task by hand for now. The hunt is where most of the hours go.","rules":"Rules are your company's policy on AI tools and data, and who knows what you're doing. Your answers say you're working in a grey area or alone. Find the policy, in writing, and show one person the output. A workflow nobody knows about can't be kept, and one that breaks policy is worse than none.","reuse":"Reuse is whether anything you build for [task] survives to next week. Your answers say prompts get rewritten and drafts start from scratch. Save the prompt that worked as a template, project, or skill, and start the next run from it. That is the difference between help and a system.","judgment":"Judgment is the check a draft of [task] has to pass before it's yours. Your answers say the check is \"it sounds right.\" Write down what would make you reject a draft, in terms of what the reader needs. A workflow without that sentence produces confident wrong things faster."},"copy":{"intro":{"eyebrow":"For PMs running more than one thing","h1":"Where do your hours go?","p":"Twelve questions about one recurring task in your week, scored on the five things that decide whether AI gives you hours back or just another tool to check: Visibility, Inputs, Rules, Reuse, Judgment. You get a score out of 30, the dimension that's costing you most, and a short note from me for where you landed.","muted":"About four minutes. Every option is something a busy PM actually does, so answer with what happens, not what you'd like to happen."},"setupLabel":"The task, in a few words","setupError":"A few words is enough, but I need one task to write the questions around.","gate":{"h2":"Where should I send the breakdown?","p":"Your score, the dimension costing you most, and a short note from me arrive in a minute. Then a few emails over the next two weeks, one per dimension. Unsubscribe any time."},"scoring":{"h2":"Scoring your answers","p":"Reading your two sentences against the rubric. Ten seconds or so."},"results":{"eyebrow":"Your Hours Back Score","videoH3":"Two minutes from me on the {band} band","videoP":"What this band looks like on a Tuesday, the one move to try this week, and what I'd do next.","weakestLabel":"Costing you most","sentencesH3":"Your two sentences","nextH3":"What I'd do next"},"meta":{"description":"Twelve questions about one recurring task in your week, scored on whether AI can give you hours back. Four minutes. From Josh Atlas, Product Management Circle.","ogDescription":"Where do your hours go? Four minutes, scored."},"brand":{"name":"Hours Back Score","by":"Josh Atlas · Product Management Circle"},"promptContext":"The PM's recurring task"}};</script>
+<script>
+/* Quiz engine front-end (Product Sense Score, Hours Back Score, ...). Built per quiz into dist/<slug>/.
+   Globals injected by the build: window.PSS_CONFIG, window.PSS_QUESTIONS. */
+(function () {
+  "use strict";
+
+  const CONFIG = window.PSS_CONFIG || {};
+  const Q = window.PSS_QUESTIONS;
+  const C = Q.copy || {};
+  const TOKEN = Q.token || "[initiative]";
+  const PREVIEW = !!CONFIG.preview;   // claude.ai artifact: scores locally, Claude grades the sentences
+  const TEST = !!CONFIG.test;         // friends-test build on GitHub Pages: scores locally, keyword estimate for the sentences, no email sent
+  const LOCAL = PREVIEW || TEST;
+
+  // ---------- tiny DOM helper (text-safe; user input never goes through innerHTML) ----------
+  function h(tag, attrs, ...kids) {
+    const el = document.createElement(tag);
+    if (attrs) for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k === "class") el.className = v;
+      else if (k === "html") el.innerHTML = v; // only ever called with build-time strings
+      else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? "" : v);
+    }
+    for (const kid of kids.flat()) {
+      if (kid == null || kid === false) continue;
+      el.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+    }
+    return el;
+  }
+  const $ = (s) => document.querySelector(s);
+
+  // ---------- state ----------
+  const STEPS = ["intro", "role", "initiative", ...Q.questions.map((q) => q.id), ...Q.written.map((w) => w.id), "gate", "scoring", "results"];
+  let state = { step: "intro", role: null, initiative: "", mc: {}, written: {}, email: "", name: "", result: null, source: sourceFromUrl() };
+
+  function sourceFromUrl() {
+    try {
+      const p = new URLSearchParams(location.search);
+      return p.get("src") || p.get("utm_source") || (document.referrer ? new URL(document.referrer).hostname : "direct");
+    } catch (e) { return "direct"; }
+  }
+  function save() { try { sessionStorage.setItem("pss-state", JSON.stringify(state)); } catch (e) {} }
+  function load() {
+    try {
+      const s = JSON.parse(sessionStorage.getItem("pss-state") || "null");
+      if (s && s.step && STEPS.includes(s.step) && s.step !== "scoring") state = Object.assign(state, s);
+    } catch (e) {}
+  }
+
+  // ---------- analytics (PostHog if present, GA4 dataLayer if present, console in preview/test) ----------
+  function track(event, props) {
+    try {
+      if (window.posthog && window.posthog.capture) window.posthog.capture(event, props || {});
+      if (window.dataLayer) window.dataLayer.push(Object.assign({ event }, props));
+      if (LOCAL) console.log("[pss]", event, props || "");
+    } catch (e) {}
+  }
+
+  // ---------- rendering ----------
+  const app = $("#app");
+  const bar = $("#progress > div");
+
+  function pipe(text) {
+    const init = state.initiative || (Q.setup[1] && Q.setup[1].fallback) || "your initiative";
+    return text.split(TOKEN).join(init).split("[initiative]").join(init);
+  }
+  function progress() {
+    const i = STEPS.indexOf(state.step);
+    const denom = STEPS.length - 2; // don't count scoring/results as steps to reach
+    bar.style.width = Math.min(100, Math.round((i / denom) * 100)) + "%";
+  }
+  function go(step) {
+    state.step = step;
+    save();
+    render();
+    window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  }
+  function next() {
+    const i = STEPS.indexOf(state.step);
+    go(STEPS[Math.min(i + 1, STEPS.length - 1)]);
+  }
+  function back() {
+    const i = STEPS.indexOf(state.step);
+    go(STEPS[Math.max(i - 1, 0)]);
+  }
+
+  function render() {
+    progress();
+    app.replaceChildren();
+    const s = state.step;
+    let el;
+    if (s === "intro") el = viewIntro();
+    else if (s === "role") el = viewRole();
+    else if (s === "initiative") el = viewInitiative();
+    else if (s === "gate") el = viewGate();
+    else if (s === "scoring") el = viewScoring();
+    else if (s === "results") el = viewResults();
+    else {
+      const q = Q.questions.find((x) => x.id === s);
+      const w = Q.written.find((x) => x.id === s);
+      el = q ? viewMC(q) : viewWritten(w);
+    }
+    app.append(el);
+    const focusTarget = app.querySelector("h1, h2");
+    if (focusTarget) { focusTarget.setAttribute("tabindex", "-1"); focusTarget.focus({ preventScroll: true }); }
+  }
+
+  function viewIntro() {
+    track("start_view");
+    return h("section", { class: "screen" },
+      h("div", { class: "eyebrow" }, C.intro.eyebrow),
+      h("h1", null, C.intro.h1),
+      h("p", null, C.intro.p),
+      h("p", { class: "muted" }, C.intro.muted),
+      PREVIEW ? h("div", { class: "notice" }, "Preview build. Nothing you type is stored or sent anywhere; the two written answers are scored live by Claude against my rubric so you can judge the grading.") : null,
+      TEST ? h("div", { class: "notice" }, "Test build. Nothing you type is stored or sent anywhere and no email goes out. The two written answers get a rough keyword estimate here; the real version grades them against my rubric.") : null,
+      h("div", { class: "row" }, h("button", { class: "btn", onclick: () => { track("start"); next(); } }, "Start")),
+    );
+  }
+
+  function viewRole() {
+    const q = Q.setup[0];
+    return h("section", { class: "screen" },
+      h("div", { class: "eyebrow" }, "Before we start"),
+      h("h2", null, q.prompt),
+      h("div", { class: "options", role: "group", "aria-label": q.prompt },
+        q.options.map((o) => h("button", {
+          class: "opt", "aria-pressed": state.role === o.id ? "true" : "false",
+          onclick: () => { state.role = o.id; save(); track("role", { role: o.id }); setTimeout(next, 120); },
+        }, o.text))),
+      h("div", { class: "row" }, h("button", { class: "link", onclick: back }, "Back")),
+    );
+  }
+
+  function viewInitiative() {
+    const q = Q.setup[1];
+    const input = h("input", { type: "text", id: "initiative", maxlength: q.maxLength, placeholder: q.placeholder, value: state.initiative, autocomplete: "off" });
+    const err = h("div", { class: "error", "aria-live": "polite" });
+    const submit = () => {
+      const v = input.value.trim();
+      if (v.length < 4) { err.textContent = C.setupError; input.focus(); return; }
+      state.initiative = v; save(); track("initiative_set"); next();
+    };
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); submit(); } });
+    return h("section", { class: "screen" },
+      h("div", { class: "eyebrow" }, "Before we start"),
+      h("h2", null, q.prompt),
+      h("div", { class: "field" },
+        h("label", { for: "initiative" }, C.setupLabel),
+        input,
+        h("div", { class: "help" }, q.help),
+        err),
+      h("div", { class: "row" },
+        h("button", { class: "btn", onclick: submit }, "Continue"),
+        h("button", { class: "link", onclick: back }, "Back")),
+    );
+  }
+
+  function viewMC(q) {
+    const idx = Q.questions.indexOf(q);
+    const chosen = state.mc[q.id];
+    return h("section", { class: "screen" },
+      idx === 0 ? h("div", { class: "notice" }, pipe(Q.instruction)) : null,
+      h("div", { class: "eyebrow" }, "Question " + (idx + 1) + " of " + (Q.questions.length + Q.written.length)),
+      h("h2", null, pipe(q.prompt)),
+      h("div", { class: "options", role: "group", "aria-label": "Answers" },
+        q.options.map((o, i) => h("button", {
+          class: "opt", "aria-pressed": chosen === i ? "true" : "false",
+          onclick: () => { state.mc[q.id] = i; save(); track("answer", { q: q.id }); setTimeout(next, 140); },
+        }, o.text))),
+      h("div", { class: "row" }, h("button", { class: "link", onclick: back }, "Back")),
+    );
+  }
+
+  function viewWritten(w) {
+    const idx = Q.questions.length + Q.written.indexOf(w);
+    const ta = h("textarea", { id: w.id, maxlength: w.maxLength, placeholder: w.placeholder });
+    ta.value = state.written[w.id] || "";
+    const count = h("div", { class: "count" }, ta.value.length + " / " + w.maxLength);
+    ta.addEventListener("input", () => { count.textContent = ta.value.length + " / " + w.maxLength; });
+    const err = h("div", { class: "error", "aria-live": "polite" });
+    const submit = () => {
+      const v = ta.value.trim();
+      if (v.length < 12) { err.textContent = "One real sentence. A blank scores zero, and I would rather you get a real number."; ta.focus(); return; }
+      state.written[w.id] = v; save(); track("answer", { q: w.id }); next();
+    };
+    return h("section", { class: "screen" },
+      h("div", { class: "eyebrow" }, "Question " + (idx + 1) + " of " + (Q.questions.length + Q.written.length) + ". Written answer."),
+      h("h2", null, pipe(w.prompt)),
+      h("div", { class: "field" }, ta, count, err),
+      h("p", { class: "help" }, "One sentence is enough. This one is scored against my rubric by an AI model; I read a sample every week to keep it honest."),
+      h("div", { class: "row" },
+        h("button", { class: "btn", onclick: submit }, "Continue"),
+        h("button", { class: "link", onclick: back }, "Back")),
+    );
+  }
+
+  function viewGate() {
+    track("gate_view");
+    const email = h("input", { type: "email", id: "email", placeholder: "you@company.com", value: state.email, autocomplete: "email", required: true });
+    const name = h("input", { type: "text", id: "name", placeholder: "First name (optional)", value: state.name, autocomplete: "given-name" });
+    const err = h("div", { class: "error", "aria-live": "polite" });
+    const form = h("form", { class: "screen gate", onsubmit: (e) => {
+      e.preventDefault();
+      const v = email.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { err.textContent = "That email doesn't look complete."; email.focus(); return; }
+      state.email = v; state.name = name.value.trim(); save(); track("email_submitted");
+      try { if (window.posthog && window.posthog.identify) window.posthog.identify(v, { name: state.name || undefined, role: state.role }); } catch (e) {}
+      go("scoring"); runScoring();
+    } },
+      h("div", { class: "eyebrow" }, "Your score is ready"),
+      h("div", { class: "blur-band", "aria-hidden": "true" }, "Strategic"),
+      h("h2", null, C.gate.h2),
+      h("p", { class: "muted" }, C.gate.p),
+      h("div", { class: "field" }, h("label", { for: "email" }, "Email"), email),
+      h("div", { class: "field" }, h("label", { for: "name" }, "Name"), name),
+      err,
+      LOCAL ? h("div", { class: "notice" }, "This build stores nothing and sends no email. Enter anything with an @ to see the results page.") : null,
+      h("div", { class: "row" },
+        h("button", { class: "btn", type: "submit" }, "Show my score"),
+        h("button", { class: "link", type: "button", onclick: back }, "Back")),
+    );
+    return form;
+  }
+
+  function viewScoring() {
+    return h("section", { class: "screen" },
+      h("h2", null, h("span", { class: "spinner", "aria-hidden": "true" }), C.scoring.h2),
+      h("p", { class: "muted", id: "scoring-status" }, C.scoring.p),
+    );
+  }
+
+  // ---------- scoring ----------
+  function bandFor(total) {
+    return Q.bands.find((b) => total >= b.min && total <= b.max) || Q.bands[0];
+  }
+  function localMC() {
+    // Only possible in preview, where the key ships with the page. Production scores on the server.
+    const sub = {}; Q.dimensions.forEach((d) => (sub[d] = 0));
+    let total = 0;
+    for (const q of Q.questions) {
+      const i = state.mc[q.id];
+      const sc = (i != null && q.options[i] && typeof q.options[i].score === "number") ? q.options[i].score : 0;
+      sub[q.dimension] += sc; total += sc;
+    }
+    return { sub, total };
+  }
+  function rubricPrompt(w) {
+    const lines = [];
+    lines.push("You are scoring one sentence written by a senior product manager, using the rubric below. Be strict and literal: score what the sentence does, not what it implies.");
+    lines.push("");
+    lines.push((C.promptContext || "Their initiative") + ": " + (state.initiative || "(not given)"));
+    lines.push("The question they answered: " + pipe(w.prompt));
+    lines.push("");
+    lines.push("Rubric:");
+    for (const r of w.rubric) lines.push("  " + r.score + ": " + r.text);
+    lines.push("");
+    lines.push("Examples:");
+    for (const ex of w.examples) lines.push("  score " + ex.score + ': "' + ex.text + '"');
+    lines.push("");
+    lines.push('Their sentence: "' + (state.written[w.id] || "") + '"');
+    lines.push("");
+    lines.push('Reply with only a JSON object: {"score": 0|1|2|3, "reason": "<one plain sentence, second person, no jargon, that says what the sentence does or lacks against the rubric>"}');
+    return lines.join("\n");
+  }
+  async function scoreWrittenPreview() {
+    const out = {};
+    let sample = null;
+    try { sample = window.claude && window.claude.use ? await window.claude.use("sample") : null; } catch (e) { sample = null; }
+    for (const w of Q.written) {
+      const text = state.written[w.id] || "";
+      if (sample) {
+        try {
+          const r = await sample.json(rubricPrompt(w), { modelTier: "quick" });
+          const sc = Math.max(0, Math.min(3, Number(r && r.score) || 0));
+          out[w.id] = { score: sc, reason: String((r && r.reason) || ""), scoredBy: "claude" };
+          continue;
+        } catch (e) {
+          out[w.id] = heuristic(w, text, "Claude scoring was unavailable in this view (" + (e && e.code ? e.code : "no access") + "), so this is a rough keyword estimate.");
+          continue;
+        }
+      }
+      out[w.id] = heuristic(w, text, "Claude scoring isn't available outside the claude.ai viewer, so this is a rough keyword estimate.");
+    }
+    return out;
+  }
+  function heuristic(w, text, note) {
+    const t = text.toLowerCase();
+    let sc = text.length < 12 ? 0 : 1;
+    if (/(not|no longer|won't|will not|instead of|rather than|which means we)/.test(t)) sc = Math.max(sc, 2);
+    if (w.id === "w1" && /(not|which means)/.test(t) && /(rate|revenue|retention|activation|churn|margin|conversion|nps|cost|time to|%|number)/.test(t)) sc = 3;
+    if (w.id === "w2" && /(not)/.test(t) && /(even|though|asked|wants|sales|renewal|exec|cfo|ceo|board|enterprise|customer)/.test(t)) sc = 3;
+    return { score: sc, reason: note, scoredBy: "heuristic" };
+  }
+
+  async function runScoring() {
+    try {
+      let result;
+      if (LOCAL || !CONFIG.apiUrl) {
+        const { sub, total } = localMC();
+        const written = await scoreWrittenPreview();
+        for (const w of Q.written) { sub[w.dimension] += written[w.id].score; }
+        const grand = total + written.w1.score + written.w2.score;
+        result = { total: grand, sub, written, band: bandFor(grand).id, scoredBy: written.w1.scoredBy };
+      } else {
+        const res = await fetch(CONFIG.apiUrl, {
+          method: "POST", headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            quiz: Q.slug, email: state.email, name: state.name, role: state.role, initiative: state.initiative,
+            answers: state.mc, written: state.written, source: state.source, version: Q.version,
+          }),
+        });
+        if (!res.ok) throw new Error("score_failed_" + res.status);
+        result = await res.json();
+      }
+      const weakest = Q.dimensions.reduce((a, b) => (result.sub[b] < result.sub[a] ? b : a));
+      state.result = Object.assign({ weakest }, result);
+      save();
+      track("scored", { band: result.band, weakest });
+      go("results");
+    } catch (e) {
+      const st = $("#scoring-status");
+      if (st) st.textContent = "Something went wrong scoring your answers. Your answers are saved on this page; try again in a moment.";
+      const btn = h("button", { class: "btn", onclick: () => { st.textContent = "Trying again."; runScoring(); } }, "Try again");
+      app.append(h("div", { class: "row" }, btn));
+      track("score_error", { message: String(e && e.message) });
+    }
+  }
+
+  // ---------- results ----------
+  function ring(total) {
+    const r = 54, c = 2 * Math.PI * r, frac = total / 30;
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "0 0 132 132"); svg.setAttribute("class", "ring"); svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Score " + total + " out of 30");
+    const bg = document.createElementNS(svgNS, "circle");
+    bg.setAttribute("cx", 66); bg.setAttribute("cy", 66); bg.setAttribute("r", r); bg.setAttribute("fill", "none");
+    bg.setAttribute("stroke", "var(--line)"); bg.setAttribute("stroke-width", 10);
+    const fg = document.createElementNS(svgNS, "circle");
+    fg.setAttribute("cx", 66); fg.setAttribute("cy", 66); fg.setAttribute("r", r); fg.setAttribute("fill", "none");
+    fg.setAttribute("stroke", "var(--accent)"); fg.setAttribute("stroke-width", 10); fg.setAttribute("stroke-linecap", "round");
+    fg.setAttribute("stroke-dasharray", (c * frac).toFixed(1) + " " + c.toFixed(1));
+    fg.setAttribute("transform", "rotate(-90 66 66)");
+    const t1 = document.createElementNS(svgNS, "text");
+    t1.setAttribute("x", 66); t1.setAttribute("y", 72); t1.setAttribute("text-anchor", "middle"); t1.setAttribute("font-size", "34");
+    t1.textContent = String(total);
+    const t2 = document.createElementNS(svgNS, "text");
+    t2.setAttribute("x", 66); t2.setAttribute("y", 92); t2.setAttribute("text-anchor", "middle"); t2.setAttribute("font-size", "12"); t2.setAttribute("fill", "var(--ink-2)");
+    t2.textContent = "of 30";
+    svg.append(bg, fg, t1, t2);
+    return svg;
+  }
+
+  function viewResults() {
+    const r = state.result;
+    const band = Q.bands.find((b) => b.id === r.band) || Q.bands[0];
+    const copy = Q.bandCopy[band.id];
+    const weakName = Q.dimensionNames[r.weakest];
+    const video = (CONFIG.videos || {})[band.id];
+    const offer = CONFIG.offer || null;
+    const secondary = (CONFIG.secondary || {})[band.id] || null;
+    track("results_view", { band: band.id });
+
+    // The ask. Same offer on every band; the copy above it is what changes.
+    const offerCard = offer ? h("div", { class: "card offer" },
+      h("div", { class: "eyebrow" }, "The next step"),
+      h("h3", null, offer.name),
+      h("p", { style: "margin:0 0 6px" }, offer.when),
+      h("p", { style: "margin:0 0 6px" }, offer.what),
+      h("p", { style: "margin:0 0 12px" }, [offer.seats, offer.price, offer.deadline].filter(Boolean).join(" · ")),
+      h("a", { class: "btn", href: offer.url, target: "_blank", rel: "noopener", onclick: () => track("offer_click", { band: band.id }) }, offer.button),
+      secondary ? h("p", { class: "small", style: "margin:12px 0 0" },
+        h("a", { href: secondary.url, target: "_blank", rel: "noopener", onclick: () => track("secondary_click", { band: band.id }) }, secondary.label)) : null) : null;
+
+    const dims = h("div", { class: "dims" },
+      Q.dimensions.map((d) => h("div", { class: "dim" + (d === r.weakest ? " weak" : "") },
+        h("span", { class: "name" }, Q.dimensionNames[d]),
+        h("div", { class: "bar" }, h("i", { style: "width:" + Math.round((r.sub[d] / 6) * 100) + "%" })),
+        h("span", { class: "n" }, r.sub[d] + " / 6"))));
+
+    const writtenCards = Q.written.map((w) => {
+      const wr = r.written[w.id] || { score: 0, reason: "" };
+      return h("div", { class: "card" },
+        h("div", { class: "row" }, h("span", { class: "pill" }, Q.dimensionNames[w.dimension] + " · " + wr.score + " / 3")),
+        h("div", { class: "quote" }, state.written[w.id] || ""),
+        h("p", { class: "small", style: "margin:0" }, wr.reason || ""));
+    });
+
+    return h("section", { class: "screen" },
+      h("div", { class: "eyebrow" }, C.results.eyebrow),
+      h("div", { class: "score-hero" },
+        ring(r.total),
+        h("div", null,
+          h("div", { class: "band-name" }, band.name),
+          h("div", { class: "band-tag" }, band.tagline),
+          h("p", { class: "small muted", style: "margin:8px 0 0" }, C.results.weakestLabel + ": " + weakName))),
+      h("h2", null, pipe(copy.headline)),
+      h("p", null, pipe(copy.body)),
+      h("h3", { class: "eyebrow", style: "margin-top:8px" }, "By dimension"),
+      dims,
+      h("div", { class: "card" },
+        h("h3", null, C.results.weakestLabel + ": " + weakName),
+        h("p", { style: "margin:0" }, pipe(Q.dimensionCopy[r.weakest]))),
+      h("h3", { class: "eyebrow", style: "margin-top:8px" }, C.results.sentencesH3),
+      ...writtenCards,
+      video ? h("div", { class: "card" },
+        h("h3", null, C.results.videoH3.replace("{band}", band.name)),
+        h("p", { class: "small" }, C.results.videoP),
+        h("a", { class: "btn", href: video, target: "_blank", rel: "noopener" }, "Watch the note")) :
+        h("div", { class: "card" }, h("h3", null, C.results.videoH3.replace("{band}", band.name)), h("p", { class: "small muted", style: "margin:0" }, "The video for this band arrives in your first email.")),
+      h("div", { class: "card" },
+        h("h3", null, C.results.nextH3),
+        h("p", { style: "margin:0" }, pipe(copy.next))),
+      offerCard,
+      h("p", { class: "disclosure" }, "The two sentences you wrote are scored against my rubric by an AI model. I read a sample every week to keep it honest.",
+        r.scoredBy === "heuristic" ? " (In this " + (TEST ? "test build" : "preview") + " the model isn't used, so those two scores are a rough estimate.)" : ""),
+      LOCAL ? h("div", { class: "row" }, h("button", { class: "link", onclick: () => { state = { step: "intro", role: null, initiative: "", mc: {}, written: {}, email: "", name: "", result: null, source: state.source }; save(); go("intro"); } }, "Start over")) : null,
+    );
+  }
+
+  // ---------- boot ----------
+  load();
+  if (state.step === "results" && !state.result) state.step = "gate";
+  render();
+})();
+
+</script>
+
+</body>
+</html>
