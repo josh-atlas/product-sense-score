@@ -1,0 +1,424 @@
+{
+  "slug": "product-sense-score",
+  "title": "Product Sense Score",
+  "token": "[initiative]",
+  "version": "2026-09-25",
+  "dimensions": [
+    "orient",
+    "reframe",
+    "balance",
+    "integrate",
+    "transmit"
+  ],
+  "dimensionNames": {
+    "orient": "Orient",
+    "reframe": "Reframe",
+    "balance": "Balance",
+    "integrate": "Integrate",
+    "transmit": "Transmit"
+  },
+  "bands": [
+    {
+      "id": "reactive",
+      "min": 0,
+      "max": 11,
+      "name": "Reactive",
+      "tagline": "Pulled by everyone else's gravity"
+    },
+    {
+      "id": "emerging",
+      "min": 12,
+      "max": 18,
+      "name": "Emerging",
+      "tagline": "Partial ORBIT, a lot of thrash"
+    },
+    {
+      "id": "strategic",
+      "min": 19,
+      "max": 25,
+      "name": "Strategic",
+      "tagline": "Others orbit your clarity"
+    },
+    {
+      "id": "leader",
+      "min": 26,
+      "max": 30,
+      "name": "Leader",
+      "tagline": "ORBIT at scale"
+    }
+  ],
+  "setup": [
+    {
+      "id": "role",
+      "prompt": "Which is closest to your role?",
+      "options": [
+        {
+          "id": "senior_pm",
+          "text": "Senior PM or above, in role"
+        },
+        {
+          "id": "pm",
+          "text": "PM below senior"
+        },
+        {
+          "id": "eng_design",
+          "text": "Engineer or designer leading product work"
+        },
+        {
+          "id": "founder",
+          "text": "Founder"
+        },
+        {
+          "id": "other",
+          "text": "Something else"
+        }
+      ]
+    },
+    {
+      "id": "initiative",
+      "prompt": "What's the initiative you own going into planning?",
+      "placeholder": "self-serve onboarding for small business accounts",
+      "help": "Describe it the way you would to a peer at another company. No internal codename, no customer names, no numbers. I use this to write the questions around your actual work and to make the results about it. It's stored with your score and nothing else. Two questions ask you for a sentence; those are scored against my rubric by an AI model and are not used to train anything. Email me any time and I'll delete all of it.",
+      "maxLength": 80
+    }
+  ],
+  "instruction": "These ask what actually happened. If a situation hasn't come up on [initiative] yet, pick what you'd most likely do.",
+  "questions": [
+    {
+      "id": "q1",
+      "dimension": "orient",
+      "prompt": "Think about the last time leadership asked where [initiative] was going next year. What did you actually bring?",
+      "options": [
+        {
+          "text": "A ranked list of the most requested improvements, with effort estimates.",
+          "score": 1
+        },
+        {
+          "text": "A focus area, with the reasoning for why it mattered most.",
+          "score": 2
+        },
+        {
+          "text": "A direction that named what we would not be doing next year, and why.",
+          "score": 3
+        },
+        {
+          "text": "Options with the trade-offs laid out so leadership could choose.",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "dimension": "reframe",
+      "prompt": "The last time a stakeholder pushed a feature onto [initiative] with \"or we lose the deal,\" what did you do first?",
+      "options": [
+        {
+          "text": "Pulled the numbers to see how many deals were actually at risk.",
+          "score": 1
+        },
+        {
+          "text": "Estimated it with engineering so I could give them a date.",
+          "score": 0
+        },
+        {
+          "text": "Wrote down, in their words, what they believed the problem was, and checked it with the people closest to the deals.",
+          "score": 3
+        },
+        {
+          "text": "Explained why it wasn't on the roadmap this quarter.",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "q3",
+      "dimension": "reframe",
+      "prompt": "The last time a debate about [initiative] went in circles (this feature versus that one), what did you do?",
+      "options": [
+        {
+          "text": "Kept it on the agenda and drove to a decision on the features.",
+          "score": 1
+        },
+        {
+          "text": "Proposed we step back and agree which customer we're building for before ranking anything.",
+          "score": 2
+        },
+        {
+          "text": "Said out loud what I thought the room was actually arguing about, named who would lose under the new frame, and offered them something.",
+          "score": 3
+        },
+        {
+          "text": "Let it run; the data would settle it in a couple of weeks.",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "id": "q4",
+      "dimension": "balance",
+      "prompt": "When you last presented a trade-off on [initiative] and someone said \"obviously option A,\" what did you take from it?",
+      "options": [
+        {
+          "text": "We had consensus; I documented it and moved on.",
+          "score": 0
+        },
+        {
+          "text": "Option B wasn't real yet. I hadn't shown what a sane person gains by choosing it, so the decision would get reopened later by whoever did.",
+          "score": 3
+        },
+        {
+          "text": "I should add a third option that split the difference.",
+          "score": 1
+        },
+        {
+          "text": "They didn't understand the risk in A; I looped in my tech lead.",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "q5",
+      "dimension": "integrate",
+      "prompt": "Six weeks before your last launch on [initiative], who was actually aligned?",
+      "options": [
+        {
+          "text": "Engineering, design, and my manager; the rest we'd loop in at launch readiness.",
+          "score": 1
+        },
+        {
+          "text": "Engineering, design, my manager, and marketing.",
+          "score": 2
+        },
+        {
+          "text": "All of those plus finance or legal, because I had already asked each of them what would stop the launch.",
+          "score": 3
+        },
+        {
+          "text": "Everyone who mattered; my manager handled their peers.",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "id": "q6",
+      "dimension": "integrate",
+      "prompt": "When you last explained [initiative] to a room with a finance person, an engineer, and a salesperson in it, how did you handle it?",
+      "options": [
+        {
+          "text": "One version of the story for everyone; consistency matters.",
+          "score": 2
+        },
+        {
+          "text": "Separate 1:1s beforehand, so the meeting was a formality.",
+          "score": 1
+        },
+        {
+          "text": "One framing that named what each of them is measured on, and said what we were not doing so sales heard it from me first.",
+          "score": 3
+        },
+        {
+          "text": "Kept it high level so nobody got into the weeds.",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "id": "q7",
+      "dimension": "transmit",
+      "prompt": "The last time someone repeated your strategy for [initiative] back to you (a tech lead, a peer, your manager), how close was it?",
+      "options": [
+        {
+          "text": "Word for word, including what we were not doing.",
+          "score": 3
+        },
+        {
+          "text": "The gist held; the details drifted.",
+          "score": 2
+        },
+        {
+          "text": "They repeated the features, not the direction.",
+          "score": 1
+        },
+        {
+          "text": "Nobody has had to; I'm in every meeting where it comes up.",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "id": "q8",
+      "dimension": "transmit",
+      "prompt": "When you last had two minutes with an exec about [initiative], what did you open with?",
+      "options": [
+        {
+          "text": "The decision we're making, what it costs us, and the number it moves.",
+          "score": 3
+        },
+        {
+          "text": "The customer problem, and how we found it.",
+          "score": 2
+        },
+        {
+          "text": "The context on how we got here.",
+          "score": 1
+        },
+        {
+          "text": "What the team has built so far.",
+          "score": 0
+        }
+      ]
+    }
+  ],
+  "written": [
+    {
+      "id": "w1",
+      "dimension": "orient",
+      "prompt": "In one sentence, write the direction you've set for [initiative].",
+      "placeholder": "We are making checkout the fastest in the category for repeat buyers, which means we are not touching onboarding next year.",
+      "maxLength": 240,
+      "rubric": [
+        {
+          "score": 3,
+          "text": "Names a choice that rules something out, and ties it to an outcome the company already measures."
+        },
+        {
+          "score": 2,
+          "text": "A clear focus with a company outcome, but nothing ruled out."
+        },
+        {
+          "score": 1,
+          "text": "A focus area or theme with no outcome (\"make onboarding better\")."
+        },
+        {
+          "score": 0,
+          "text": "A feature list, a mission statement, \"improve [initiative],\" or blank."
+        }
+      ],
+      "examples": [
+        {
+          "score": 3,
+          "text": "Cut time-to-first-value for self-serve accounts from days to one session, so the 30-day activation number moves, which means no new admin features this year."
+        },
+        {
+          "score": 2,
+          "text": "Make self-serve onboarding fast enough that 30-day activation goes up."
+        },
+        {
+          "score": 1,
+          "text": "Improve the onboarding experience for new accounts."
+        },
+        {
+          "score": 0,
+          "text": "Onboarding checklist, progress bar, welcome email series, and in-app tips."
+        }
+      ]
+    },
+    {
+      "id": "w2",
+      "dimension": "balance",
+      "prompt": "In one sentence, what are you explicitly not doing on [initiative] this year?",
+      "placeholder": "We are not building the merchant export API, even if the two enterprise renewals ask for it.",
+      "maxLength": 240,
+      "rubric": [
+        {
+          "score": 3,
+          "text": "A specific, nameable thing someone could hold you to in November, and it names who wants it."
+        },
+        {
+          "score": 2,
+          "text": "A specific thing, no stakeholder named."
+        },
+        {
+          "score": 1,
+          "text": "A category (\"lower-priority requests,\" \"nice-to-haves\")."
+        },
+        {
+          "score": 0,
+          "text": "Nothing actually ruled out (\"we'll revisit as capacity allows\"), or blank."
+        }
+      ],
+      "examples": [
+        {
+          "score": 3,
+          "text": "We are not building SSO for the mid-market tier this year, even though two account managers have it in their renewal plans."
+        },
+        {
+          "score": 2,
+          "text": "We are not building SSO for the mid-market tier this year."
+        },
+        {
+          "score": 1,
+          "text": "We are deprioritizing the lower-impact enterprise requests."
+        },
+        {
+          "score": 0,
+          "text": "We will revisit other requests as capacity allows."
+        }
+      ]
+    }
+  ],
+  "bandCopy": {
+    "reactive": {
+      "headline": "You are running someone else's roadmap.",
+      "body": "Most of what you brought to the last planning cycle was shaped by whoever asked loudest. That is not a talent problem. Nobody told you the framing was the job. The first move is small: one direction for [initiative] that says what you are not doing.",
+      "next": "Take a seat in the next cohort. You will bring one real decision from [initiative] each week and leave with a direction that says what you are not doing. If that feels like too much right now, start with the free exercise in your first email and the community."
+    },
+    "emerging": {
+      "headline": "You set direction. It does not always hold.",
+      "body": "You bring a point of view to [initiative], and then the same decision comes back a month later, because a trade-off stayed unnamed or a stakeholder family was never in the room. This is the band the cohort is built for: one real decision a week, tested until it holds.",
+      "next": "This is the band the cohort is built for. Bring the decision on [initiative] that keeps coming back and we test it until it holds."
+    },
+    "strategic": {
+      "headline": "Your framing travels. Now make it compound.",
+      "body": "People repeat your direction for [initiative] back to you close to intact, and your trade-offs mostly stay decided. What is left is consistency across rooms and the one dimension that scored lowest. That is usually where a senior PM's next level lives.",
+      "next": "The cohort gives you six weeks of pressure on your lowest dimension, from peers who will not let a trade-off stay vague. If 1:1 work is what you are after, book the review and we decide together."
+    },
+    "leader": {
+      "headline": "You create gravity. The question is your team.",
+      "body": "Your answers on [initiative] describe someone whose direction holds without them in the room. At this level the leverage is in the PMs around you, and whether they can do what you just did.",
+      "next": "Take a seat, or send a PM on your team who should take this score. I run the same method with product teams; the review call is where we scope that."
+    }
+  },
+  "dimensionCopy": {
+    "orient": "Orient is setting the direction before anyone hands you one. Your answers say the direction for [initiative] is a theme more than a choice. A choice rules something out. Try writing it again with the sentence \"which means we are not\" in the middle.",
+    "reframe": "Reframe is changing how the room sees the problem without winning an argument. Your answers say you tend to answer the question as asked. Next time a stakeholder pushes, write down their frame in their words before you respond, and name who loses if the frame changes.",
+    "balance": "Balance is saying what you are choosing against, before someone makes you. Your answers say your trade-offs on [initiative] have one real option in them. Write option B so a sane peer would pick it, then say plainly what you are not doing and who wanted it.",
+    "integrate": "Integrate is carrying every function in one plan instead of winning each conversation separately. Your answers say one stakeholder family (usually finance or legal) meets [initiative] late. Ask each of them this week what would stop the launch.",
+    "transmit": "Transmit is making the framing simple enough to travel without you. Your answers say the strategy for [initiative] lives in your head or in the features. Write the two-minute version, then have someone repeat it back and rewrite from what they got wrong."
+  },
+  "copy": {
+    "intro": {
+      "eyebrow": "For senior PMs who own a roadmap",
+      "h1": "How does your judgment hold up when it's your roadmap on the line?",
+      "p": "Twelve questions about the initiative you actually own, scored against the five behaviors I see in PMs with real pull in their orgs: Orient, Reframe, Balance, Integrate, Transmit. You get a score out of 30, your weakest dimension, and a two-minute note from me for where you landed.",
+      "muted": "About four minutes. Every option is something a good PM would do, so answer with what happened, not what you'd like to have done."
+    },
+    "setupLabel": "The initiative, in a few words",
+    "setupError": "A few words is enough, but I need something to write the questions around.",
+    "gate": {
+      "h2": "Where should I send the breakdown?",
+      "p": "Your score, your weakest dimension, and a short note from me arrive in a minute. Then a few emails over the next two weeks, one per dimension. Unsubscribe any time."
+    },
+    "scoring": {
+      "h2": "Scoring your answers",
+      "p": "Reading your two sentences against the rubric. Ten seconds or so."
+    },
+    "results": {
+      "eyebrow": "Your Product Sense Score",
+      "videoH3": "Two minutes from me on the {band} band",
+      "videoP": "What this band looks like in a planning meeting, the move to try this week, and what I'd do next.",
+      "weakestLabel": "Weakest dimension",
+      "sentencesH3": "Your two sentences",
+      "nextH3": "What I'd do next"
+    },
+    "meta": {
+      "description": "Twelve questions about the initiative you own, scored against the five ORBIT behaviors. Four minutes. From Josh Atlas, Product Management Circle.",
+      "ogDescription": "How does your judgment hold up when it's your roadmap on the line? Four minutes, scored."
+    },
+    "brand": {
+      "name": "Product Sense Score",
+      "by": "Josh Atlas · Product Management Circle"
+    },
+    "promptContext": "Their initiative"
+  }
+}
