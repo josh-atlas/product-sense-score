@@ -1,0 +1,21 @@
+name = "pss-worker"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Comma-separated list of origins allowed to call the API. Leave empty while testing locally.
+ALLOWED_ORIGIN = "https://joshatlas.co"
+# Model used to score the two written answers. Check https://docs.claude.com for the current cheapest capable model id.
+ANTHROPIC_MODEL = "claude-haiku-4-5"
+# JSON map of Kit tag name -> tag id. Create the tags in Kit, then paste their ids here.
+KIT_TAGS = "{\"band:reactive\":0,\"band:emerging\":0,\"band:strategic\":0,\"band:leader\":0,\"weakest:orient\":0,\"weakest:reframe\":0,\"weakest:balance\":0,\"weakest:integrate\":0,\"weakest:transmit\":0,\"role:senior_pm\":0,\"role:pm\":0,\"role:eng_design\":0,\"role:founder\":0,\"role:other\":0}"
+
+# Optional: a D1 database that logs every scored submission (see schema.sql).
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "pss"
+# database_id = "REPLACE"
+
+# Secrets (never in this file):
+#   npx wrangler secret put ANTHROPIC_API_KEY
+#   npx wrangler secret put KIT_API_KEY
