@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Product Sense Score (test)</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Test build of the Product Sense Score.">
+</head>
+<body>
+<title>Product Sense Score (test)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap">
+<style>
+:root {
+  --paper: #FBF8F3;
+  --paper-2: #F2ECE3;
+  --ink: #221B1E;
+  --ink-2: #5E5257;
+  --line: #E2D9CF;
+  --accent: #750D37;
+  --accent-ink: #FFFFFF;
+  --green: #4F7D5C;
+  --sage: #BFD4AD;
+  --sage-ink: #24371F;
+  --warn: #9A5B1F;
+  --focus: #2F6FDE;
+  --serif: "Georgia Pro", Georgia, "Times New Roman", serif;
+  --sans: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+  --max: 640px;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #17131A;
+    --paper-2: #221C26;
+    --ink: #F3ECE6;
+    --ink-2: #B8ACB0;
+    --line: #3A3139;
+    --accent: #E38DAB;
+    --accent-ink: #2A0713;
+    --green: #8FBF9A;
+    --sage: #2F4A34;
+    --sage-ink: #D9EBCF;
+    --warn: #E0A860;
+    --focus: #8BB4FF;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #17131A;
+  --paper-2: #221C26;
+  --ink: #F3ECE6;
+  --ink-2: #B8ACB0;
+  --line: #3A3139;
+  --accent: #E38DAB;
+  --accent-ink: #2A0713;
+  --green: #8FBF9A;
+  --sage: #2F4A34;
+  --sage-ink: #D9EBCF;
+  --warn: #E0A860;
+  --focus: #8BB4FF;
+}
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+.pss-progress {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  height: 4px; background: var(--line);
+}
+.pss-progress > div { height: 100%; width: 0; background: var(--green); transition: width .3s ease; }
+
+.pss-wrap {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding-inline: 20px;
+  padding-block: 28px 56px;
+}
+.pss-brand {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2);
+  margin-bottom: 28px;
+}
+.pss-brand b { color: var(--accent); font-weight: 700; letter-spacing: .1em; }
+
+h1, h2 {
+  font-family: var(--serif); font-weight: 400; line-height: 1.2; text-wrap: balance; margin: 0 0 12px;
+}
+h1 { font-size: clamp(30px, 5vw, 40px); }
+h2 { font-size: clamp(22px, 4vw, 28px); }
+p { margin: 0 0 14px; max-width: 62ch; }
+.muted { color: var(--ink-2); }
+.small { font-size: 14px; }
+.eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 10px; }
+
+.screen { display: grid; gap: 16px; }
+.screen[hidden] { display: none; }
+
+.options { display: grid; gap: 10px; margin-top: 6px; }
+.opt {
+  display: block; width: 100%; text-align: left;
+  font: inherit; color: var(--ink); background: var(--paper-2);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 16px; cursor: pointer; line-height: 1.45;
+  transition: border-color .15s, background .15s;
+}
+.opt:hover { border-color: var(--accent); }
+.opt[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
+.field { display: grid; gap: 8px; }
+label { font-weight: 600; }
+input[type="text"], input[type="email"], textarea {
+  font: inherit; color: var(--ink); background: var(--paper-2);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 12px 14px; width: 100%;
+}
+textarea { min-height: 96px; resize: vertical; font-family: var(--serif); font-size: 17px; }
+.help { font-size: 13.5px; color: var(--ink-2); line-height: 1.5; max-width: 62ch; }
+.count { font-size: 12px; color: var(--ink-2); text-align: right; font-variant-numeric: tabular-nums; }
+
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 6px; }
+.btn {
+  font: inherit; font-weight: 600; font-size: 15px;
+  background: var(--accent); color: var(--accent-ink);
+  border: 0; border-radius: 999px; padding: 12px 22px; cursor: pointer;
+}
+.btn:disabled { opacity: .5; cursor: default; }
+.btn.ghost { background: transparent; color: var(--ink-2); border: 1px solid var(--line); }
+.link { background: none; border: 0; padding: 0; font: inherit; color: var(--ink-2); text-decoration: underline; cursor: pointer; }
+
+.notice {
+  background: var(--sage); color: var(--sage-ink);
+  border-radius: var(--radius); padding: 12px 14px; font-size: 14px;
+}
+.error { color: var(--warn); font-size: 14px; }
+
+.gate { position: relative; }
+.blur-band {
+  font-family: var(--serif); font-size: 26px; filter: blur(7px); user-select: none; color: var(--accent);
+  margin-bottom: 6px;
+}
+
+/* Results */
+.score-hero { display: grid; grid-template-columns: 132px 1fr; gap: 20px; align-items: center; }
+@media (max-width: 460px) { .score-hero { grid-template-columns: 1fr; } }
+.ring { width: 132px; height: 132px; }
+.ring text { font-family: var(--serif); fill: var(--ink); }
+.band-name { font-family: var(--serif); font-size: 30px; line-height: 1.1; color: var(--accent); }
+.band-tag { color: var(--ink-2); }
+
+.dims { display: grid; gap: 10px; margin-top: 4px; }
+.dim { display: grid; grid-template-columns: 96px 1fr 44px; gap: 12px; align-items: center; font-size: 14px; }
+.dim .bar { height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.dim .bar > i { display: block; height: 100%; background: var(--green); }
+.dim.weak .bar > i { background: var(--accent); }
+.dim .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.dim .name { font-weight: 600; }
+.dim.weak .name { color: var(--accent); }
+
+.card { border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; background: var(--paper-2); }
+.card h3 { font-family: var(--serif); font-weight: 400; font-size: 20px; margin: 0 0 8px; }
+.quote { font-family: var(--serif); font-size: 17px; border-left: 3px solid var(--sage); padding-left: 12px; margin: 6px 0 8px; }
+.pill { display: inline-block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: var(--sage); color: var(--sage-ink); }
+.disclosure { font-size: 13.5px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 12px; }
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -2px; margin-right: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* The ask */
+.card.offer { border-color: var(--accent); border-width: 2px; }
+.card.offer .btn { display: block; width: 100%; box-sizing: border-box; text-align: center; }
+
+</style>
+<div id="progress" class="pss-progress" aria-hidden="true"><div></div></div>
+<main class="pss-wrap">
+  <div class="pss-brand"><b>Product Sense Score</b><span>Josh Atlas · Product Management Circle</span></div>
+  <div id="app" aria-live="polite"></div>
+</main>
+<script>window.PSS_CONFIG = {"test":true,"videos":{},"offer":{"name":"Product Sense Cohort","when":"Six Wednesdays, next dates to be announced","what":"One real decision of yours a week, tested in a questions-only format in front of eleven peers.","seats":"Twelve seats","price":"$499","deadline":"","button":"Take a seat","url":"https://www.skool.com/product-management-circle-6353"},"secondary":{"reactive":{"label":"Not ready for the cohort? Join the free community first.","url":"https://www.skool.com/product-management-circle-6353"},"emerging":null,"strategic":{"label":"Want to talk it through first? Book a 20-minute score review.","url":"https://calendly.com/REPLACE"},"leader":{"label":"Thinking about your team, not just you? Book a 20-minute review.","url":"https://calendly.com/REPLACE"}}};</script>
+<script>window.PSS_QUESTIONS = {"slug":"product-sense-score","title":"Product Sense Score","token":"[initiative]","version":"2026-09-25","dimensions":["orient","reframe","balance","integrate","transmit"],"dimensionNames":{"orient":"Orient","reframe":"Reframe","balance":"Balance","integrate":"Integrate","transmit":"Transmit"},"bands":[{"id":"reactive","min":0,"max":11,"name":"Reactive","tagline":"Pulled by everyone else's gravity"},{"id":"emerging","min":12,"max":18,"name":"Emerging","tagline":"Partial ORBIT, a lot of thrash"},{"id":"strategic","min":19,"max":25,"name":"Strategic","tagline":"Others orbit your clarity"},{"id":"leader","min":26,"max":30,"name":"Leader","tagline":"ORBIT at scale"}],"setup":[{"id":"role","prompt":"Which is closest to your role?","options":[{"id":"senior_pm","text":"Senior PM or above, in role"},{"id":"pm","text":"PM below senior"},{"id":"eng_design","text":"Engineer or designer leading product work"},{"id":"founder","text":"Founder"},{"id":"other","text":"Something else"}]},{"id":"initiative","prompt":"What's the initiative you own going into planning?","placeholder":"self-serve onboarding for small business accounts","help":"Describe it the way you would to a peer at another company. No internal codename, no customer names, no numbers. I use this to write the questions around your actual work and to make the results about it. It's stored with your score and nothing else. Two questions ask you for a sentence; those are scored against my rubric by an AI model and are not used to train anything. Email me any time and I'll delete all of it.","maxLength":80}],"instruction":"These ask what actually happened. If a situation hasn't come up on [initiative] yet, pick what you'd most likely do.","questions":[{"id":"q1","dimension":"orient","prompt":"Think about the last time leadership asked where [initiative] was going next year. What did you actually bring?","options":[{"text":"A ranked list of the most requested improvements, with effort estimates.","score":1},{"text":"A focus area, with the reasoning for why it mattered most.","score":2},{"text":"A direction that named what we would not be doing next year, and why.","score":3},{"text":"Options with the trade-offs laid out so leadership could choose.","score":0}]},{"id":"q2","dimension":"reframe","prompt":"The last time a stakeholder pushed a feature onto [initiative] with \"or we lose the deal,\" what did you do first?","options":[{"text":"Pulled the numbers to see how many deals were actually at risk.","score":1},{"text":"Estimated it with engineering so I could give them a date.","score":0},{"text":"Wrote down, in their words, what they believed the problem was, and checked it with the people closest to the deals.","score":3},{"text":"Explained why it wasn't on the roadmap this quarter.","score":2}]},{"id":"q3","dimension":"reframe","prompt":"The last time a debate about [initiative] went in circles (this feature versus that one), what did you do?","options":[{"text":"Kept it on the agenda and drove to a decision on the features.","score":1},{"text":"Proposed we step back and agree which customer we're building for before ranking anything.","score":2},{"text":"Said out loud what I thought the room was actually arguing about, named who would lose under the new frame, and offered them something.","score":3},{"text":"Let it run; the data would settle it in a couple of weeks.","score":0}]},{"id":"q4","dimension":"balance","prompt":"When you last presented a trade-off on [initiative] and someone said \"obviously option A,\" what did you take from it?","options":[{"text":"We had consensus; I documented it and moved on.","score":0},{"text":"Option B wasn't real yet. I hadn't shown what a sane person gains by choosing it, so the decision would get reopened later by whoever did.","score":3},{"text":"I should add a third option that split the difference.","score":1},{"text":"They didn't understand the risk in A; I looped in my tech lead.","score":2}]},{"id":"q5","dimension":"integrate","prompt":"Six weeks before your last launch on [initiative], who was actually aligned?","options":[{"text":"Engineering, design, and my manager; the rest we'd loop in at launch readiness.","score":1},{"text":"Engineering, design, my manager, and marketing.","score":2},{"text":"All of those plus finance or legal, because I had already asked each of them what would stop the launch.","score":3},{"text":"Everyone who mattered; my manager handled their peers.","score":0}]},{"id":"q6","dimension":"integrate","prompt":"When you last explained [initiative] to a room with a finance person, an engineer, and a salesperson in it, how did you handle it?","options":[{"text":"One version of the story for everyone; consistency matters.","score":2},{"text":"Separate 1:1s beforehand, so the meeting was a formality.","score":1},{"text":"One framing that named what each of them is measured on, and said what we were not doing so sales heard it from me first.","score":3},{"text":"Kept it high level so nobody got into the weeds.","score":0}]},{"id":"q7","dimension":"transmit","prompt":"The last time someone repeated your strategy for [initiative] back to you (a tech lead, a peer, your manager), how close was it?","options":[{"text":"Word for word, including what we were not doing.","score":3},{"text":"The gist held; the details drifted.","score":2},{"text":"They repeated the features, not the direction.","score":1},{"text":"Nobody has had to; I'm in every meeting where it comes up.","score":0}]},{"id":"q8","dimension":"transmit","prompt":"When you last had two minutes with an exec about [initiative], what did you open with?","options":[{"text":"The decision we're making, what it costs us, and the number it moves.","score":3},{"text":"The customer problem, and how we found it.","score":2},{"text":"The context on how we got here.","score":1},{"text":"What the team has built so far.","score":0}]}],"written":[{"id":"w1","dimension":"orient","prompt":"In one sentence, write the direction you've set for [initiative].","placeholder":"We are making checkout the fastest in the category for repeat buyers, which means we are not touching onboarding next year.","maxLength":240,"rubric":[{"score":3,"text":"Names a choice that rules something out, and ties it to an outcome the company already measures."},{"score":2,"text":"A clear focus with a company outcome, but nothing ruled out."},{"score":1,"text":"A focus area or theme with no outcome (\"make onboarding better\")."},{"score":0,"text":"A feature list, a mission statement, \"improve [initiative],\" or blank."}],"examples":[{"score":3,"text":"Cut time-to-first-value for self-serve accounts from days to one session, so the 30-day activation number moves, which means no new admin features this year."},{"score":2,"text":"Make self-serve onboarding fast enough that 30-day activation goes up."},{"score":1,"text":"Improve the onboarding experience for new accounts."},{"score":0,"text":"Onboarding checklist, progress bar, welcome email series, and in-app tips."}]},{"id":"w2","dimension":"balance","prompt":"In one sentence, what are you explicitly not doing on [initiative] this year?","placeholder":"We are not building the merchant export API, even if the two enterprise renewals ask for it.","maxLength":240,"rubric":[{"score":3,"text":"A specific, nameable thing someone could hold you to in November, and it names who wants it."},{"score":2,"text":"A specific thing, no stakeholder named."},{"score":1,"text":"A category (\"lower-priority requests,\" \"nice-to-haves\")."},{"score":0,"text":"Nothing actually ruled out (\"we'll revisit as capacity allows\"), or blank."}],"examples":[{"score":3,"text":"We are not building SSO for the mid-market tier this year, even though two account managers have it in their renewal plans."},{"score":2,"text":"We are not building SSO for the mid-market tier this year."},{"score":1,"text":"We are deprioritizing the lower-impact enterprise requests."},{"score":0,"text":"We will revisit other requests as capacity allows."}]}],"bandCopy":{"reactive":{"headline":"You are running someone else's roadmap.","body":"Most of what you brought to the last planning cycle was shaped by whoever asked loudest. That is not a talent problem. Nobody told you the framing was the job. The first move is small: one direction for [initiative] that says what you are not doing.","next":"Take a seat in the next cohort. You will bring one real decision from [initiative] each week and leave with a direction that says what you are not doing. If that feels like too much right now, start with the free exercise in your first email and the community."},"emerging":{"headline":"You set direction. It does not always hold.","body":"You bring a point of view to [initiative], and then the same decision comes back a month later, because a trade-off stayed unnamed or a stakeholder family was never in the room. This is the band the cohort is built for: one real decision a week, tested until it holds.","next":"This is the band the cohort is built for. Bring the decision on [initiative] that keeps coming back and we test it until it holds."},"strategic":{"headline":"Your framing travels. Now make it compound.","body":"People repeat your direction for [initiative] back to you close to intact, and your trade-offs mostly stay decided. What is left is consistency across rooms and the one dimension that scored lowest. That is usually where a senior PM's next level lives.","next":"The cohort gives you six weeks of pressure on your lowest dimension, from peers who will not let a trade-off stay vague. If 1:1 work is what you are after, book the review and we decide together."},"leader":{"headline":"You create gravity. The question is your team.","body":"Your answers on [initiative] describe someone whose direction holds without them in the room. At this level the leverage is in the PMs around you, and whether they can do what you just did.","next":"Take a seat, or send a PM on your team who should take this score. I run the same method with product teams; the review call is where we scope that."}},"dimensionCopy":{"orient":"Orient is setting the direction before anyone hands you one. Your answers say the direction for [initiative] is a theme more than a choice. A choice rules something out. Try writing it again with the sentence \"which means we are not\" in the middle.","reframe":"Reframe is changing how the room sees the problem without winning an argument. Your answers say you tend to answer the question as asked. Next time a stakeholder pushes, write down their frame in their words before you respond, and name who loses if the frame changes.","balance":"Balance is saying what you are choosing against, before someone makes you. Your answers say your trade-offs on [initiative] have one real option in them. Write option B so a sane peer would pick it, then say plainly what you are not doing and who wanted it.","integrate":"Integrate is carrying every function in one plan instead of winning each conversation separately. Your answers say one stakeholder family (usually finance or legal) meets [initiative] late. Ask each of them this week what would stop the launch.","transmit":"Transmit is making the framing simple enough to travel without you. Your answers say the strategy for [initiative] lives in your head or in the features. Write the two-minute version, then have someone repeat it back and rewrite from what they got wrong."},"copy":{"intro":{"eyebrow":"For senior PMs who own a roadmap","h1":"How does your judgment hold up when it's your roadmap on the line?","p":"Twelve questions about the initiative you actually own, scored against the five behaviors I see in PMs with real pull in their orgs: Orient, Reframe, Balance, Integrate, Transmit. You get a score out of 30, your weakest dimension, and a two-minute note from me for where you landed.","muted":"About four minutes. Every option is something a good PM would do, so answer with what happened, not what you'd like to have done."},"setupLabel":"The initiative, in a few words","setupError":"A few words is enough, but I need something to write the questions around.","gate":{"h2":"Where should I send the breakdown?","p":"Your score, your weakest dimension, and a short note from me arrive in a minute. Then a few emails over the next two weeks, one per dimension. Unsubscribe any time."},"scoring":{"h2":"Scoring your answers","p":"Reading your two sentences against the rubric. Ten seconds or so."},"results":{"eyebrow":"Your Product Sense Score","videoH3":"Two minutes from me on the {band} band","videoP":"What this band looks like in a planning meeting, the move to try this week, and what I'd do next.","weakestLabel":"Weakest dimension","sentencesH3":"Your two sentences","nextH3":"What I'd do next"},"meta":{"description":"Twelve questions about the initiative you own, scored against the five ORBIT behaviors. Four minutes. From Josh Atlas, Product Management Circle.","ogDescription":"How does your judgment hold up when it's your roadmap on the line? Four minutes, scored."},"brand":{"name":"Product Sense Score","by":"Josh Atlas · Product Management Circle"},"promptContext":"Their initiative"}};</script>
+<script>
+/* Quiz engine front-end (Product Sense Score, Hours Back Score, ...). Built per quiz into dist/<slug>/.
+   Globals injected by the build: window.PSS_CONFIG, window.PSS_QUESTIONS. */
+(function () {
+  "use strict";
+
+  const CONFIG = window.PSS_CONFIG || {};
+  const Q = window.PSS_QUESTIONS;
+  const C = Q.copy || {};
+  const TOKEN = Q.token || "[initiative]";
+  const PREVIEW = !!CONFIG.preview;   // claude.ai artifact: scores locally, Claude grades the sentences
+  const TEST = !!CONFIG.test;         // friends-test build on GitHub Pages: scores locally, keyword estimate for the sentences, no email sent
+  const LOCAL = PREVIEW || TEST;
+
+  // ---------- tiny DOM helper (text-safe; user input never goes through innerHTML) ----------
+  function h(tag, attrs, ...kids) {
+    const el = document.createElement(tag);
+    if (attrs) for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k === "class") el.className = v;
+      else if (k === "html") el.innerHTML = v; // only ever called with build-time strings
+      else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? "" : v);
+    }
+    for (const kid of kids.flat()) {
+      if (kid == null || kid === false) continue;
+      el.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+    }
+    return el;
+  }
+  const $ = (s) => document.querySelector(s);
+
+  // ---------- state ----------
+  const STEPS = ["intro", "role", "initiative", ...Q.questions.map((q) => q.id), ...Q.written.map((w) => w.id), "gate", "scoring", "results"];
+  let state = { step: "intro", role: null, initiative: "", mc: {}, written: {}, email: "", name: "", result: null, source: sourceFromUrl() };
+
+  function sourceFromUrl() {
+    try {
+      const p = new URLSearchParams(location.search);
+      return p.get("src") || p.get("utm_source") || (document.referrer ? new URL(document.referrer).hostname : "direct");
+    } catch (e) { return "direct"; }
+  }
+  function save() { try { sessionStorage.setItem("pss-state", JSON.stringify(state)); } catch (e) {} }
+  function load() {
+    try {
+      const s = JSON.parse(sessionStorage.getItem("pss-state") || "null");
+      if (s && s.step && STEPS.includes(s.step) && s.step !== "scoring") state = Object.assign(state, s);
+    } catch (e) {}
+  }
+
+  // ---------- analytics (PostHog if present, GA4 dataLayer if present, console in preview/test) ----------
+  function track(event, props) {
+    try {
+      if (window.posthog && window.posthog.capture) window.posthog.capture(event, props || {});
+      if (window.dataLayer) window.dataLayer.push(Object.assign({ event }, props));
+      if (LOCAL) console.log("[pss]", event, props || "");
+    } catch (e) {}
+  }
+
+  // ---------- rendering ----------
+  const app = $("#app");
+  const bar = $("#progress > div");
+
+  function pipe(text) {
+    const init = state.initiative || (Q.setup[1] && Q.setup[1].fallback) || "your initiative";
+    return text.split(TOKEN).join(init).split("[initiative]").join(init);
+  }
+  function progress() {
+    const i = STEPS.indexOf(state.step);
+    const denom = STEPS.length - 2; // don't count scoring/results as steps to reach
+    bar.style.width = Math.min(100, Math.round((i / denom) * 100)) + "%";
+  }
+  function go(step) {
+    state.step = step;
+    save();
+    render();
+    window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  }
+  function next() {
+    const i = STEPS.indexOf(state.step);
+    go(STEPS[Math.min(i + 1, STEPS.length - 1)]);
+  }
+  function back() {
+    const i = STEPS.indexOf(state.step);
+    go(STEPS[Math.max(i - 1, 0)]);
+  }
+
+  function render() {
+    progress();
+    app.replaceChildren();
+    const s = state.step;
+    let el;
+    if (s === "intro") el = viewIntro();
+    else if (s === "role") el = viewRole();
+    else if (s === "initiative") el = viewInitiative();
+    else if (s === "gate") el = viewGate();
+    else if (s === "scoring") el = viewScoring();
+    else if (s === "results") el = viewResults();
+    else {
+      const q = Q.questions.find((x) => x.id === s);
+      const w = Q.written.find((x) => x.id === s);
+      el = q ? viewMC(q) : viewWritten(w);
+    }
+    app.append(el);
+    const focusTarget = app.querySelector("h1, h2");
+    if (focusTarget) { focusTarget.setAttribute("tabindex", "-1"); focusTarget.focus({ preventScroll: true }); }
+  }
+
+  function viewIntro() {
+    track("start_view");
+    return h("section", { class: "screen" },
+      h("div", { class: "eyebrow" }, C.intro.eyebrow),
+      h("h1", null, C.intro.h1),
+      h("p", null, C.intro.p),
+      h("p", { class: "muted" }, C.intro.muted),
+      PREVIEW ? h("div", { class: "notice" }, "Preview build. Nothing you type is stored or sent anywhere; the two written answers are scored live by Claude against my rubric so you can judge the grading.") : null,
+      TEST ? h("div", { class: "notice" }, "Test build. Nothing you type is stored or sent anywhere and no email goes out. The two written answers get a rough keyword estimate here; the real version grades them against my rubric.") : null,
+      h("div", { class: "row" }, h("button", { class: "btn", onclick: () => { track("start"); next(); } }, "Start")),
+    );
+  }
+
+  function viewRole() {
+    const q = Q.setup[0];
+    return h("section", { class: "screen" },
+      h("div", { class: "eyebrow" }, "Before we start"),
+      h("h2", null, q.prompt),
+      h("div", { class: "options", role: "group", "aria-label": q.prompt },
+        q.options.map((o) => h("button", {
+          class: "opt", "aria-pressed": state.role === o.id ? "true" : "false",
+          onclick: () => { state.role = o.id; save(); track("role", { role: o.id }); setTimeout(next, 120); },
+        }, o.text))),
+      h("div", { class: "row" }, h("button", { class: "link", onclick: back }, "Back")),
+    );
+  }
+
+  function viewInitiative() {
+    const q = Q.setup[1];
+    const input = h("input", { type: "text", id: "initiative", maxlength: q.maxLength, placeholder: q.placeholder, value: state.initiative, autocomplete: "off" });
+    const err = h("div", { class: "error", "aria-live": "polite" });
+    const submit = () => {
+      const v = input.value.trim();
+      if (v.length < 4) { err.textContent = C.setupError; input.focus(); return; }
+      state.initiative = v; save(); track("initiative_set"); next();
+    };
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); submit(); } });
+    return h("section", { class: "screen" },
+      h("div", { class: "eyebrow" }, "Before we start"),
+      h("h2", null, q.prompt),
+      h("div", { class: "field" },
+        h("label", { for: "initiative" }, C.setupLabel),
+        input,
+        h("div", { class: "help" }, q.help),
+        err),
+      h("div", { class: "row" },
+        h("button", { class: "btn", onclick: submit }, "Continue"),
+        h("button", { class: "link", onclick: back }, "Back")),
+    );
+  }
+
+  function viewMC(q) {
+    const idx = Q.questions.indexOf(q);
+    const chosen = state.mc[q.id];
+    return h("section", { class: "screen" },
+      idx === 0 ? h("div", { class: "notice" }, pipe(Q.instruction)) : null,
+      h("div", { class: "eyebrow" }, "Question " + (idx + 1) + " of " + (Q.questions.length + Q.written.length)),
+      h("h2", null, pipe(q.prompt)),
+      h("div", { class: "options", role: "group", "aria-label": "Answers" },
+        q.options.map((o, i) => h("button", {
+          class: "opt", "aria-pressed": chosen === i ? "true" : "false",
+          onclick: () => { state.mc[q.id] = i; save(); track("answer", { q: q.id }); setTimeout(next, 140); },
+        }, o.text))),
+      h("div", { class: "row" }, h("button", { class: "link", onclick: back }, "Back")),
+    );
+  }
+
+  function viewWritten(w) {
+    const idx = Q.questions.length + Q.written.indexOf(w);
+    const ta = h("textarea", { id: w.id, maxlength: w.maxLength, placeholder: w.placeholder });
+    ta.value = state.written[w.id] || "";
+    const count = h("div", { class: "count" }, ta.value.length + " / " + w.maxLength);
+    ta.addEventListener("input", () => { count.textContent = ta.value.length + " / " + w.maxLength; });
+    const err = h("div", { class: "error", "aria-live": "polite" });
+    const submit = () => {
+      const v = ta.value.trim();
+      if (v.length < 12) { err.textContent = "One real sentence. A blank scores zero, and I would rather you get a real number."; ta.focus(); return; }
+      state.written[w.id] = v; save(); track("answer", { q: w.id }); next();
+    };
+    return h("section", { class: "screen" },
+      h("div", { class: "eyebrow" }, "Question " + (idx + 1) + " of " + (Q.questions.length + Q.written.length) + ". Written answer."),
+      h("h2", null, pipe(w.prompt)),
+      h("div", { class: "field" }, ta, count, err),
+      h("p", { class: "help" }, "One sentence is enough. This one is scored against my rubric by an AI model; I read a sample every week to keep it honest."),
+      h("div", { class: "row" },
+        h("button", { class: "btn", onclick: submit }, "Continue"),
+        h("button", { class: "link", onclick: back }, "Back")),
+    );
+  }
+
+  function viewGate() {
+    track("gate_view");
+    const email = h("input", { type: "email", id: "email", placeholder: "you@company.com", value: state.email, autocomplete: "email", required: true });
+    const name = h("input", { type: "text", id: "name", placeholder: "First name (optional)", value: state.name, autocomplete: "given-name" });
+    const err = h("div", { class: "error", "aria-live": "polite" });
+    const form = h("form", { class: "screen gate", onsubmit: (e) => {
+      e.preventDefault();
+      const v = email.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { err.textContent = "That email doesn't look complete."; email.focus(); return; }
+      state.email = v; state.name = name.value.trim(); save(); track("email_submitted");
+      try { if (window.posthog && window.posthog.identify) window.posthog.identify(v, { name: state.name || undefined, role: state.role }); } catch (e) {}
+      go("scoring"); runScoring();
+    } },
+      h("div", { class: "eyebrow" }, "Your score is ready"),
+      h("div", { class: "blur-band", "aria-hidden": "true" }, "Strategic"),
+      h("h2", null, C.gate.h2),
+      h("p", { class: "muted" }, C.gate.p),
+      h("div", { class: "field" }, h("label", { for: "email" }, "Email"), email),
+      h("div", { class: "field" }, h("label", { for: "name" }, "Name"), name),
+      err,
+      LOCAL ? h("div", { class: "notice" }, "This build stores nothing and sends no email. Enter anything with an @ to see the results page.") : null,
+      h("div", { class: "row" },
+        h("button", { class: "btn", type: "submit" }, "Show my score"),
+        h("button", { class: "link", type: "button", onclick: back }, "Back")),
+    );
+    return form;
+  }
+
+  function viewScoring() {
+    return h("section", { class: "screen" },
+      h("h2", null, h("span", { class: "spinner", "aria-hidden": "true" }), C.scoring.h2),
+      h("p", { class: "muted", id: "scoring-status" }, C.scoring.p),
+    );
+  }
+
+  // ---------- scoring ----------
+  function bandFor(total) {
+    return Q.bands.find((b) => total >= b.min && total <= b.max) || Q.bands[0];
+  }
+  function localMC() {
+    // Only possible in preview, where the key ships with the page. Production scores on the server.
+    const sub = {}; Q.dimensions.forEach((d) => (sub[d] = 0));
+    let total = 0;
+    for (const q of Q.questions) {
+      const i = state.mc[q.id];
+      const sc = (i != null && q.options[i] && typeof q.options[i].score === "number") ? q.options[i].score : 0;
+      sub[q.dimension] += sc; total += sc;
+    }
+    return { sub, total };
+  }
+  function rubricPrompt(w) {
+    const lines = [];
+    lines.push("You are scoring one sentence written by a senior product manager, using the rubric below. Be strict and literal: score what the sentence does, not what it implies.");
+    lines.push("");
+    lines.push((C.promptContext || "Their initiative") + ": " + (state.initiative || "(not given)"));
+    lines.push("The question they answered: " + pipe(w.prompt));
+    lines.push("");
+    lines.push("Rubric:");
+    for (const r of w.rubric) lines.push("  " + r.score + ": " + r.text);
+    lines.push("");
+    lines.push("Examples:");
+    for (const ex of w.examples) lines.push("  score " + ex.score + ': "' + ex.text + '"');
+    lines.push("");
+    lines.push('Their sentence: "' + (state.written[w.id] || "") + '"');
+    lines.push("");
+    lines.push('Reply with only a JSON object: {"score": 0|1|2|3, "reason": "<one plain sentence, second person, no jargon, that says what the sentence does or lacks against the rubric>"}');
+    return lines.join("\n");
+  }
+  async function scoreWrittenPreview() {
+    const out = {};
+    let sample = null;
+    try { sample = window.claude && window.claude.use ? await window.claude.use("sample") : null; } catch (e) { sample = null; }
+    for (const w of Q.written) {
+      const text = state.written[w.id] || "";
+      if (sample) {
+        try {
+          const r = await sample.json(rubricPrompt(w), { modelTier: "quick" });
+          const sc = Math.max(0, Math.min(3, Number(r && r.score) || 0));
+          out[w.id] = { score: sc, reason: String((r && r.reason) || ""), scoredBy: "claude" };
+          continue;
+        } catch (e) {
+          out[w.id] = heuristic(w, text, "Claude scoring was unavailable in this view (" + (e && e.code ? e.code : "no access") + "), so this is a rough keyword estimate.");
+          continue;
+        }
+      }
+      out[w.id] = heuristic(w, text, "Claude scoring isn't available outside the claude.ai viewer, so this is a rough keyword estimate.");
+    }
+    return out;
+  }
+  function heuristic(w, text, note) {
+    const t = text.toLowerCase();
+    let sc = text.length < 12 ? 0 : 1;
+    if (/(not|no longer|won't|will not|instead of|rather than|which means we)/.test(t)) sc = Math.max(sc, 2);
+    if (w.id === "w1" && /(not|which means)/.test(t) && /(rate|revenue|retention|activation|churn|margin|conversion|nps|cost|time to|%|number)/.test(t)) sc = 3;
+    if (w.id === "w2" && /(not)/.test(t) && /(even|though|asked|wants|sales|renewal|exec|cfo|ceo|board|enterprise|customer)/.test(t)) sc = 3;
+    return { score: sc, reason: note, scoredBy: "heuristic" };
+  }
+
+  async function runScoring() {
+    try {
+      let result;
+      if (LOCAL || !CONFIG.apiUrl) {
+        const { sub, total } = localMC();
+        const written = await scoreWrittenPreview();
+        for (const w of Q.written) { sub[w.dimension] += written[w.id].score; }
+        const grand = total + written.w1.score + written.w2.score;
+        result = { total: grand, sub, written, band: bandFor(grand).id, scoredBy: written.w1.scoredBy };
+      } else {
+        const res = await fetch(CONFIG.apiUrl, {
+          method: "POST", headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            quiz: Q.slug, email: state.email, name: state.name, role: state.role, initiative: state.initiative,
+            answers: state.mc, written: state.written, source: state.source, version: Q.version,
+          }),
+        });
+        if (!res.ok) throw new Error("score_failed_" + res.status);
+        result = await res.json();
+      }
+      const weakest = Q.dimensions.reduce((a, b) => (result.sub[b] < result.sub[a] ? b : a));
+      state.result = Object.assign({ weakest }, result);
+      save();
+      track("scored", { band: result.band, weakest });
+      go("results");
+    } catch (e) {
+      const st = $("#scoring-status");
+      if (st) st.textContent = "Something went wrong scoring your answers. Your answers are saved on this page; try again in a moment.";
+      const btn = h("button", { class: "btn", onclick: () => { st.textContent = "Trying again."; runScoring(); } }, "Try again");
+      app.append(h("div", { class: "row" }, btn));
+      track("score_error", { message: String(e && e.message) });
+    }
+  }
+
+  // ---------- results ----------
+  function ring(total) {
+    const r = 54, c = 2 * Math.PI * r, frac = total / 30;
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "0 0 132 132"); svg.setAttribute("class", "ring"); svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Score " + total + " out of 30");
+    const bg = document.createElementNS(svgNS, "circle");
+    bg.setAttribute("cx", 66); bg.setAttribute("cy", 66); bg.setAttribute("r", r); bg.setAttribute("fill", "none");
+    bg.setAttribute("stroke", "var(--line)"); bg.setAttribute("stroke-width", 10);
+    const fg = document.createElementNS(svgNS, "circle");
+    fg.setAttribute("cx", 66); fg.setAttribute("cy", 66); fg.setAttribute("r", r); fg.setAttribute("fill", "none");
+    fg.setAttribute("stroke", "var(--accent)"); fg.setAttribute("stroke-width", 10); fg.setAttribute("stroke-linecap", "round");
+    fg.setAttribute("stroke-dasharray", (c * frac).toFixed(1) + " " + c.toFixed(1));
+    fg.setAttribute("transform", "rotate(-90 66 66)");
+    const t1 = document.createElementNS(svgNS, "text");
+    t1.setAttribute("x", 66); t1.setAttribute("y", 72); t1.setAttribute("text-anchor", "middle"); t1.setAttribute("font-size", "34");
+    t1.textContent = String(total);
+    const t2 = document.createElementNS(svgNS, "text");
+    t2.setAttribute("x", 66); t2.setAttribute("y", 92); t2.setAttribute("text-anchor", "middle"); t2.setAttribute("font-size", "12"); t2.setAttribute("fill", "var(--ink-2)");
+    t2.textContent = "of 30";
+    svg.append(bg, fg, t1, t2);
+    return svg;
+  }
+
+  function viewResults() {
+    const r = state.result;
+    const band = Q.bands.find((b) => b.id === r.band) || Q.bands[0];
+    const copy = Q.bandCopy[band.id];
+    const weakName = Q.dimensionNames[r.weakest];
+    const video = (CONFIG.videos || {})[band.id];
+    const offer = CONFIG.offer || null;
+    const secondary = (CONFIG.secondary || {})[band.id] || null;
+    track("results_view", { band: band.id });
+
+    // The ask. Same offer on every band; the copy above it is what changes.
+    const offerCard = offer ? h("div", { class: "card offer" },
+      h("div", { class: "eyebrow" }, "The next step"),
+      h("h3", null, offer.name),
+      h("p", { style: "margin:0 0 6px" }, offer.when),
+      h("p", { style: "margin:0 0 6px" }, offer.what),
+      h("p", { style: "margin:0 0 12px" }, [offer.seats, offer.price, offer.deadline].filter(Boolean).join(" · ")),
+      h("a", { class: "btn", href: offer.url, target: "_blank", rel: "noopener", onclick: () => track("offer_click", { band: band.id }) }, offer.button),
+      secondary ? h("p", { class: "small", style: "margin:12px 0 0" },
+        h("a", { href: secondary.url, target: "_blank", rel: "noopener", onclick: () => track("secondary_click", { band: band.id }) }, secondary.label)) : null) : null;
+
+    const dims = h("div", { class: "dims" },
+      Q.dimensions.map((d) => h("div", { class: "dim" + (d === r.weakest ? " weak" : "") },
+        h("span", { class: "name" }, Q.dimensionNames[d]),
+        h("div", { class: "bar" }, h("i", { style: "width:" + Math.round((r.sub[d] / 6) * 100) + "%" })),
+        h("span", { class: "n" }, r.sub[d] + " / 6"))));
+
+    const writtenCards = Q.written.map((w) => {
+      const wr = r.written[w.id] || { score: 0, reason: "" };
+      return h("div", { class: "card" },
+        h("div", { class: "row" }, h("span", { class: "pill" }, Q.dimensionNames[w.dimension] + " · " + wr.score + " / 3")),
+        h("div", { class: "quote" }, state.written[w.id] || ""),
+        h("p", { class: "small", style: "margin:0" }, wr.reason || ""));
+    });
+
+    return h("section", { class: "screen" },
+      h("div", { class: "eyebrow" }, C.results.eyebrow),
+      h("div", { class: "score-hero" },
+        ring(r.total),
+        h("div", null,
+          h("div", { class: "band-name" }, band.name),
+          h("div", { class: "band-tag" }, band.tagline),
+          h("p", { class: "small muted", style: "margin:8px 0 0" }, C.results.weakestLabel + ": " + weakName))),
+      h("h2", null, pipe(copy.headline)),
+      h("p", null, pipe(copy.body)),
+      h("h3", { class: "eyebrow", style: "margin-top:8px" }, "By dimension"),
+      dims,
+      h("div", { class: "card" },
+        h("h3", null, C.results.weakestLabel + ": " + weakName),
+        h("p", { style: "margin:0" }, pipe(Q.dimensionCopy[r.weakest]))),
+      h("h3", { class: "eyebrow", style: "margin-top:8px" }, C.results.sentencesH3),
+      ...writtenCards,
+      video ? h("div", { class: "card" },
+        h("h3", null, C.results.videoH3.replace("{band}", band.name)),
+        h("p", { class: "small" }, C.results.videoP),
+        h("a", { class: "btn", href: video, target: "_blank", rel: "noopener" }, "Watch the note")) :
+        h("div", { class: "card" }, h("h3", null, C.results.videoH3.replace("{band}", band.name)), h("p", { class: "small muted", style: "margin:0" }, "The video for this band arrives in your first email.")),
+      h("div", { class: "card" },
+        h("h3", null, C.results.nextH3),
+        h("p", { style: "margin:0" }, pipe(copy.next))),
+      offerCard,
+      h("p", { class: "disclosure" }, "The two sentences you wrote are scored against my rubric by an AI model. I read a sample every week to keep it honest.",
+        r.scoredBy === "heuristic" ? " (In this " + (TEST ? "test build" : "preview") + " the model isn't used, so those two scores are a rough estimate.)" : ""),
+      LOCAL ? h("div", { class: "row" }, h("button", { class: "link", onclick: () => { state = { step: "intro", role: null, initiative: "", mc: {}, written: {}, email: "", name: "", result: null, source: state.source }; save(); go("intro"); } }, "Start over")) : null,
+    );
+  }
+
+  // ---------- boot ----------
+  load();
+  if (state.step === "results" && !state.result) state.step = "gate";
+  render();
+})();
+
+</script>
+
+</body>
+</html>
