@@ -76,7 +76,7 @@ ${analytics}
   // Test build (GitHub Pages): full document, key included, no worker, no email.
   const test = doc({
     title: title + " (test)",
-    head: `<meta name="robots" content="noindex">\n<meta name="description" content="Test build of the ${esc(title)}.">`,
+    head: `<meta name="robots" content="noindex">\n<meta name="description" content="Test build of the ${esc(title)}.">\n${analytics}`,
     body: fill({ ...common, TITLE: title + " (test)", CONFIG_JSON: safeJson({ test: true, videos: {}, ...offerBits }), QUESTIONS_JSON: safeJson(questions) }),
   });
 
