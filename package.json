@@ -1,0 +1,9 @@
+{
+  "name": "product-sense-score",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "serve": "npm run build && npx --yes serve dist"
+  }
+}
