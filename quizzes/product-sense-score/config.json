@@ -1,0 +1,38 @@
+{
+  "apiUrl": "https://pss-worker.YOUR-SUBDOMAIN.workers.dev/api/score",
+  "videos": {
+    "reactive": "",
+    "emerging": "",
+    "strategic": "",
+    "leader": ""
+  },
+  "offer": {
+    "name": "Product Sense Cohort",
+    "when": "Six Wednesdays, next dates to be announced",
+    "what": "One real decision of yours a week, tested in a questions-only format in front of eleven peers.",
+    "seats": "Twelve seats",
+    "price": "$499",
+    "deadline": "",
+    "button": "Take a seat",
+    "url": "https://www.skool.com/product-management-circle-6353"
+  },
+  "secondary": {
+    "reactive": {
+      "label": "Not ready for the cohort? Join the free community first.",
+      "url": "https://www.skool.com/product-management-circle-6353"
+    },
+    "emerging": null,
+    "strategic": {
+      "label": "Want to talk it through first? Book a 20-minute score review.",
+      "url": "https://calendly.com/REPLACE"
+    },
+    "leader": {
+      "label": "Thinking about your team, not just you? Book a 20-minute review.",
+      "url": "https://calendly.com/REPLACE"
+    }
+  },
+  "posthog": {
+    "key": "",
+    "host": "https://us.i.posthog.com"
+  }
+}
