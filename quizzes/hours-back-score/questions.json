@@ -1,0 +1,231 @@
+{
+  "slug": "hours-back-score",
+  "title": "Hours Back Score",
+  "token": "[task]",
+  "kitPrefix": "hbs",
+  "version": "2026-09-28",
+  "dimensions": ["visibility", "inputs", "rules", "reuse", "judgment"],
+  "dimensionNames": {
+    "visibility": "Visibility",
+    "inputs": "Inputs",
+    "rules": "Rules",
+    "reuse": "Reuse",
+    "judgment": "Judgment"
+  },
+  "bands": [
+    { "id": "byhand", "min": 0, "max": 11, "name": "By hand", "tagline": "Everything runs through you, every time" },
+    { "id": "adhoc", "min": 12, "max": 18, "name": "Ad hoc", "tagline": "AI helps when you remember to ask it" },
+    { "id": "systematic", "min": 19, "max": 25, "name": "Systematic", "tagline": "You have pieces of a workflow. It isn't one yet" },
+    { "id": "operator", "min": 26, "max": 30, "name": "Operator", "tagline": "You run a system. The question is what's next" }
+  ],
+  "setup": [
+    {
+      "id": "role",
+      "prompt": "Which is closest to your situation?",
+      "options": [
+        { "id": "multi_pm", "text": "PM with more than one product or area" },
+        { "id": "single_pm", "text": "PM with one product" },
+        { "id": "lead", "text": "I manage PMs" },
+        { "id": "founder", "text": "Founder doing the PM work" },
+        { "id": "other", "text": "Something else" }
+      ]
+    },
+    {
+      "id": "initiative",
+      "prompt": "What's the recurring task that eats your week?",
+      "placeholder": "the weekly status update across three products",
+      "fallback": "that task",
+      "help": "One task, the kind that comes back every week or every month: the status update, the PRD you draft again, the customer feedback you still haven't sorted, the QBR pack. Say it the way you'd say it to a peer at another company: no internal codenames, no customer names, no numbers. I use it to write the questions around your actual week. It's stored with your score and nothing else. Two questions ask you for a sentence; those are scored against my rubric by an AI model and are not used to train anything. Email me any time and I'll delete all of it.",
+      "maxLength": 80
+    }
+  ],
+  "instruction": "These ask what actually happens, not what you'd like to happen. If a situation hasn't come up with [task] yet, pick what you'd most likely do.",
+  "questions": [
+    {
+      "id": "q1",
+      "dimension": "visibility",
+      "prompt": "If I asked how many hours [task] took you last month, what could you tell me?",
+      "options": [
+        { "text": "A close estimate. I know roughly where it lands.", "score": 2 },
+        { "text": "It varies too much month to month to put a number on.", "score": 1 },
+        { "text": "A number. I've tracked it, at least once.", "score": 3 },
+        { "text": "I've never thought of it as one task. It's just part of the job.", "score": 0 }
+      ]
+    },
+    {
+      "id": "q2",
+      "dimension": "inputs",
+      "prompt": "Where do the inputs for [task] live right now?",
+      "options": [
+        { "text": "In a few places. I gather them myself each time so nothing gets missed.", "score": 1 },
+        { "text": "In one place I could point a tool at: a doc, a tracker, a folder.", "score": 3 },
+        { "text": "Mostly in my head, which is faster than writing it all down.", "score": 0 },
+        { "text": "In a couple of known places, and I copy them into one doc before I start.", "score": 2 }
+      ]
+    },
+    {
+      "id": "q3",
+      "dimension": "inputs",
+      "prompt": "The last time you did [task], how did you start?",
+      "options": [
+        { "text": "From last time's version, edited.", "score": 2 },
+        { "text": "From a blank page, so it stays fresh and honest.", "score": 0 },
+        { "text": "From a template or checklist I keep for it.", "score": 3 },
+        { "text": "From whatever came in that week, in the order it came in.", "score": 1 }
+      ]
+    },
+    {
+      "id": "q4",
+      "dimension": "rules",
+      "prompt": "What do you know about your company's rules for using AI tools on work content?",
+      "options": [
+        { "text": "I know which tool is approved. I'm less sure what data is allowed in it.", "score": 2 },
+        { "text": "I've asked around. Nobody seems sure, so I keep it to non-sensitive stuff.", "score": 1 },
+        { "text": "I've read the policy. I know the sanctioned tools and what data can go in.", "score": 3 },
+        { "text": "I haven't looked into it yet.", "score": 0 }
+      ]
+    },
+    {
+      "id": "q5",
+      "dimension": "rules",
+      "prompt": "Who at your company knows you use AI for [task]?",
+      "options": [
+        { "text": "Nobody. It's my edge, and I'd rather not invite questions.", "score": 1 },
+        { "text": "My manager. I've shown them the output and how it's made.", "score": 3 },
+        { "text": "A couple of peers I trust.", "score": 2 },
+        { "text": "I don't use AI for [task] yet.", "score": 0 }
+      ]
+    },
+    {
+      "id": "q6",
+      "dimension": "reuse",
+      "prompt": "The last time a prompt worked well for something like [task], what happened to it?",
+      "options": [
+        { "text": "I rewrote it from memory the next time. It's usually close enough.", "score": 1 },
+        { "text": "It's in the chat history. I scroll back and find it.", "score": 2 },
+        { "text": "I saved it as a reusable prompt, template, project or skill.", "score": 3 },
+        { "text": "I don't reuse prompts. Each week is different.", "score": 0 }
+      ]
+    },
+    {
+      "id": "q7",
+      "dimension": "reuse",
+      "prompt": "How much of [task] does a tool do before you touch it?",
+      "options": [
+        { "text": "It helps with pieces when I ask: a summary here, a rewording there.", "score": 2 },
+        { "text": "None. I do it by hand, and honestly that's faster.", "score": 0 },
+        { "text": "It produces a first draft from the inputs. I edit and decide.", "score": 3 },
+        { "text": "I use it to check my work after I've done it.", "score": 1 }
+      ]
+    },
+    {
+      "id": "q8",
+      "dimension": "judgment",
+      "prompt": "The last AI draft you used for something like [task]: how did you decide it was good enough?",
+      "options": [
+        { "text": "Read it through. It sounded right.", "score": 1 },
+        { "text": "Checked it against what the reader needs to decide, and fixed what was missing.", "score": 3 },
+        { "text": "Compared it to the last version I'd done by hand.", "score": 2 },
+        { "text": "Sent it. The reader would tell me if something was off.", "score": 0 }
+      ]
+    }
+  ],
+  "written": [
+    {
+      "id": "w1",
+      "dimension": "visibility",
+      "prompt": "In one sentence, describe [task] the way you'd hand it to a new hire: what goes in, what comes out, and who reads it.",
+      "placeholder": "Every Friday I pull the three product trackers and last week's escalations into a one-page update that the VP of Product reads before her Monday staff meeting.",
+      "maxLength": 240,
+      "rubric": [
+        { "score": 3, "text": "Names the inputs, the output, and who consumes it (or what decision it feeds). Someone else could start from this sentence." },
+        { "score": 2, "text": "Two of the three: inputs and output, or output and reader, but one is missing." },
+        { "score": 1, "text": "One of the three, or all three so vaguely that a new hire would have to ask." },
+        { "score": 0, "text": "A label, not a description (\"the weekly update\"), or blank." }
+      ],
+      "examples": [
+        { "score": 3, "text": "Every Friday I pull the three product trackers and last week's escalations into a one-page update that the VP of Product reads before her Monday staff meeting." },
+        { "score": 2, "text": "I turn the trackers and the escalation list into a one-page status update every Friday." },
+        { "score": 1, "text": "I write the weekly status update for leadership." },
+        { "score": 0, "text": "The weekly update." }
+      ]
+    },
+    {
+      "id": "w2",
+      "dimension": "judgment",
+      "prompt": "In one sentence, what would make you reject an AI draft of [task]?",
+      "placeholder": "If it reports a date or a number without the source I can check it against, or if it buries the one risk my VP actually needs to see.",
+      "maxLength": 240,
+      "rubric": [
+        { "score": 3, "text": "A specific, checkable criterion tied to the reader or the decision the output feeds (a missing risk, an unsourced number, a recommendation the reader can't act on)." },
+        { "score": 2, "text": "A specific, checkable criterion, but not tied to the reader or decision (\"if it invents a number\")." },
+        { "score": 1, "text": "A general quality statement (\"if it's inaccurate,\" \"if it doesn't sound like me\")." },
+        { "score": 0, "text": "\"I'd know it when I see it,\" no criterion, or blank." }
+      ],
+      "examples": [
+        { "score": 3, "text": "If it states a delivery date without the tracker line I can check it against, or hides the one risk my VP needs to see before her staff meeting." },
+        { "score": 2, "text": "If it makes up a number or a date that isn't in the inputs." },
+        { "score": 1, "text": "If it's inaccurate or doesn't sound like me." },
+        { "score": 0, "text": "I'd know it when I read it." }
+      ]
+    }
+  ],
+  "bandCopy": {
+    "byhand": {
+      "headline": "Everything runs through you, every time.",
+      "body": "Your answers on [task] describe work that starts from scratch, lives in your head or your inbox, and gets done by hand because that feels faster. It is faster, once. The cost is that it never gets cheaper, and every week it competes with the work only you can do.",
+      "next": "You have the most hours to get back, and the shortest path: one task, mapped, with its inputs put in one place before any tool touches it. That is week one of the pilot."
+    },
+    "adhoc": {
+      "headline": "AI helps when you remember to ask it.",
+      "body": "You use a tool on [task] the way most PMs do: pieces, when you think of it, with a prompt you rewrite each time. The hours come back in small change. Nothing compounds, because nothing is saved, measured, or checked against what the reader needs.",
+      "next": "The pilot turns one of those pieces into a workflow you keep: inputs in one place, a saved prompt or skill, a check you can name, and the hours counted before and after."
+    },
+    "systematic": {
+      "headline": "You have pieces of a workflow. It isn't one yet.",
+      "body": "You've saved what works, you know roughly what [task] costs, and you know the rules you're working inside. What's missing is the part that makes it a system: the inputs feeding it without you, and a stated bar the draft has to clear before it's yours.",
+      "next": "Four weeks is enough to finish it, document it so it runs without you babysitting it, and measure the hours honestly. Then it's a story you can tell your manager, and your next interviewer."
+    },
+    "operator": {
+      "headline": "You run a system. The question is what's next.",
+      "body": "Your answers on [task] describe a workflow with inputs, reuse, a named check, and someone else who knows it exists. That puts you ahead of most PMs I talk to. The leverage now is the next task, and the PMs around you who are still doing this by hand.",
+      "next": "Take the pilot on your second-worst task, or send a PM on your team who should take this score. I run the same method with teams, inside the company's rules."
+    }
+  },
+  "dimensionCopy": {
+    "visibility": "Visibility is knowing what [task] costs and what it's for. Your answers say it's part of the job rather than a thing with hours and a reader. Write the one-sentence handoff (what goes in, what comes out, who reads it) and time it once. That sentence is the spec for everything after.",
+    "inputs": "Inputs are where the raw material for [task] lives before you start. Your answers say it's scattered, or in your head, so every run starts with a hunt. Put the inputs in one place a tool could read (a doc, a tracker, a folder), even if you keep doing the task by hand for now. The hunt is where most of the hours go.",
+    "rules": "Rules are your company's policy on AI tools and data, and who knows what you're doing. Your answers say you're working in a grey area or alone. Find the policy, in writing, and show one person the output. A workflow nobody knows about can't be kept, and one that breaks policy is worse than none.",
+    "reuse": "Reuse is whether anything you build for [task] survives to next week. Your answers say prompts get rewritten and drafts start from scratch. Save the prompt that worked as a template, project, or skill, and start the next run from it. That is the difference between help and a system.",
+    "judgment": "Judgment is the check a draft of [task] has to pass before it's yours. Your answers say the check is \"it sounds right.\" Write down what would make you reject a draft, in terms of what the reader needs. A workflow without that sentence produces confident wrong things faster."
+  },
+  "copy": {
+    "intro": {
+      "eyebrow": "For PMs running more than one thing",
+      "h1": "Where do your hours go?",
+      "p": "Twelve questions about one recurring task in your week, scored on the five things that decide whether AI gives you hours back or just another tool to check: Visibility, Inputs, Rules, Reuse, Judgment. You get a score out of 30, the dimension that's costing you most, and a short note from me for where you landed.",
+      "muted": "About four minutes. Every option is something a busy PM actually does, so answer with what happens, not what you'd like to happen."
+    },
+    "setupLabel": "The task, in a few words",
+    "setupError": "A few words is enough, but I need one task to write the questions around.",
+    "gate": {
+      "h2": "Where should I send the breakdown?",
+      "p": "Your score, the dimension costing you most, and a short note from me arrive in a minute. Then a few emails over the next two weeks, one per dimension. Unsubscribe any time."
+    },
+    "scoring": { "h2": "Scoring your answers", "p": "Reading your two sentences against the rubric. Ten seconds or so." },
+    "results": {
+      "eyebrow": "Your Hours Back Score",
+      "videoH3": "Two minutes from me on the {band} band",
+      "videoP": "What this band looks like on a Tuesday, the one move to try this week, and what I'd do next.",
+      "weakestLabel": "Costing you most",
+      "sentencesH3": "Your two sentences",
+      "nextH3": "What I'd do next"
+    },
+    "meta": {
+      "description": "Twelve questions about one recurring task in your week, scored on whether AI can give you hours back. Four minutes. From Josh Atlas, Product Management Circle.",
+      "ogDescription": "Where do your hours go? Four minutes, scored."
+    },
+    "brand": { "name": "Hours Back Score", "by": "Josh Atlas · Product Management Circle" },
+    "promptContext": "The PM's recurring task"
+  }
+}
