@@ -18,7 +18,7 @@
     "price": "",
     "deadline": "",
     "button": "Book a 20-minute scoping call",
-    "url": "https://calendly.com/REPLACE"
+    "url": "https://calendar.app.google/hNGics4Si6au7EPt8"
   },
   "secondary": {
     "byhand": null,
@@ -26,7 +26,7 @@
     "systematic": null,
     "operator": {
       "label": "Thinking about your team rather than yourself? Same call, bring one PM's task.",
-      "url": "https://calendly.com/REPLACE"
+      "url": "https://calendar.app.google/hNGics4Si6au7EPt8"
     }
   }
 }
