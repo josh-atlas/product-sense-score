@@ -1,0 +1,32 @@
+{
+  "apiUrl": "https://pss-worker.YOUR-SUBDOMAIN.workers.dev/api/score",
+  "posthog": {
+    "key": "",
+    "host": "https://us.i.posthog.com"
+  },
+  "videos": {
+    "byhand": "",
+    "adhoc": "",
+    "systematic": "",
+    "operator": ""
+  },
+  "offer": {
+    "name": "Hours Back Pilot",
+    "when": "Four weeks. Start date set on the scoping call.",
+    "what": "One recurring task from your week. We build a reusable AI workflow around it, inside your company's rules, with your judgment in the loop. You leave with a working deliverable, a one-page system doc, and the hours measured before and after.",
+    "seats": "Three seats this round",
+    "price": "",
+    "deadline": "",
+    "button": "Book a 20-minute scoping call",
+    "url": "https://calendly.com/REPLACE"
+  },
+  "secondary": {
+    "byhand": null,
+    "adhoc": null,
+    "systematic": null,
+    "operator": {
+      "label": "Thinking about your team rather than yourself? Same call, bring one PM's task.",
+      "url": "https://calendly.com/REPLACE"
+    }
+  }
+}
