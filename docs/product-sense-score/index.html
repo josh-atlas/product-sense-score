@@ -257,8 +257,15 @@ textarea { min-height: 96px; resize: vertical; font-family: var(--serif); font-s
   const app = $("#app");
   const bar = $("#progress > div");
 
+  // The user's own words drop into question stems. Quoting them keeps the sentence readable whatever they typed
+  // ("how many hours you spent on “weekly pulse check report”"); the fallback is plain prose and stays unquoted.
+  function taskName() {
+    const raw = (state.initiative || "").trim().replace(/^["“”']+|["“”']+$/g, "").replace(/[.!?]+$/, "");
+    if (!raw) return (Q.setup[1] && Q.setup[1].fallback) || "your initiative";
+    return "“" + raw + "”";
+  }
   function pipe(text) {
-    const init = state.initiative || (Q.setup[1] && Q.setup[1].fallback) || "your initiative";
+    const init = taskName();
     return text.split(TOKEN).join(init).split("[initiative]").join(init);
   }
   function progress() {
@@ -346,6 +353,7 @@ textarea { min-height: 96px; resize: vertical; font-family: var(--serif); font-s
         h("label", { for: "initiative" }, C.setupLabel),
         input,
         h("div", { class: "help" }, q.help),
+        q.privacy ? h("div", { class: "help muted", style: "margin-top:6px" }, q.privacy) : null,
         err),
       h("div", { class: "row" },
         h("button", { class: "btn", onclick: submit }, "Continue"),
@@ -406,7 +414,7 @@ textarea { min-height: 96px; resize: vertical; font-family: var(--serif); font-s
       go("scoring"); runScoring();
     } },
       h("div", { class: "eyebrow" }, "Your score is ready"),
-      h("div", { class: "blur-band", "aria-hidden": "true" }, "Strategic"),
+      h("div", { class: "blur-band", "aria-hidden": "true" }, Q.bands[Q.bands.length - 1].name),
       h("h2", null, C.gate.h2),
       h("p", { class: "muted" }, C.gate.p),
       h("div", { class: "field" }, h("label", { for: "email" }, "Email"), email),
@@ -484,6 +492,13 @@ textarea { min-height: 96px; resize: vertical; font-family: var(--serif); font-s
   function heuristic(w, text, note) {
     const t = text.toLowerCase();
     let sc = text.length < 12 ? 0 : 1;
+    // Quiz-specific estimate: each regex group in w.heuristic stands for one rubric element; score counts how many appear.
+    if (Array.isArray(w.heuristic) && w.heuristic.length) {
+      let hit = 0;
+      for (const re of w.heuristic) { try { if (new RegExp(re, "i").test(t)) hit++; } catch (e) { /* bad pattern: skip */ } }
+      const perHit = 3 / w.heuristic.length;
+      return { score: text.length < 25 ? 0 : Math.max(1, Math.min(3, Math.round(hit * perHit))), reason: note, scoredBy: "heuristic" };
+    }
     if (/(not|no longer|won't|will not|instead of|rather than|which means we)/.test(t)) sc = Math.max(sc, 2);
     if (w.id === "w1" && /(not|which means)/.test(t) && /(rate|revenue|retention|activation|churn|margin|conversion|nps|cost|time to|%|number)/.test(t)) sc = 3;
     if (w.id === "w2" && /(not)/.test(t) && /(even|though|asked|wants|sales|renewal|exec|cfo|ceo|board|enterprise|customer)/.test(t)) sc = 3;
@@ -576,22 +591,37 @@ textarea { min-height: 96px; resize: vertical; font-family: var(--serif); font-s
         h("div", { class: "bar" }, h("i", { style: "width:" + Math.round((r.sub[d] / 6) * 100) + "%" })),
         h("span", { class: "n" }, r.sub[d] + " / 6"))));
 
+    // "Is 22 good?" Place the score on the ladder in one sentence, built from the band table.
+    const bandIdx = Q.bands.indexOf(band);
+    const ordinals = ["lowest", "second", "third", "top"];
+    const ordinal = Q.bands.length === 4 ? ordinals[bandIdx] : String(bandIdx + 1);
+    const above = Q.bands[bandIdx + 1];
+    const countWord = ["one", "two", "three", "four", "five", "six"][Q.bands.length - 1] || String(Q.bands.length);
+    const placement = r.total + " of 30 is " + band.name + ", the " + ordinal + " of " + countWord + " bands." +
+      (above ? " " + above.name + " starts at " + above.min + "." : " There is no band above this one.");
+
     const writtenCards = Q.written.map((w) => {
       const wr = r.written[w.id] || { score: 0, reason: "" };
       return h("div", { class: "card" },
         h("div", { class: "row" }, h("span", { class: "pill" }, Q.dimensionNames[w.dimension] + " · " + wr.score + " / 3")),
+        h("p", { class: "small muted", style: "margin:8px 0 4px" }, "You were asked: " + pipe(w.prompt)),
         h("div", { class: "quote" }, state.written[w.id] || ""),
         h("p", { class: "small", style: "margin:0" }, wr.reason || ""));
     });
 
+    // "What I'd do next": the first move for the weakest dimension, then the band-level note.
+    const nextText = [Q.dimensionNext && Q.dimensionNext[r.weakest], copy.next].filter(Boolean).map(pipe).join(" ");
+
     return h("section", { class: "screen" },
       h("div", { class: "eyebrow" }, C.results.eyebrow),
+      C.results.framing ? h("p", { class: "small muted", style: "margin:0 0 12px" }, pipe(C.results.framing)) : null,
       h("div", { class: "score-hero" },
         ring(r.total),
         h("div", null,
           h("div", { class: "band-name" }, band.name),
           h("div", { class: "band-tag" }, band.tagline),
-          h("p", { class: "small muted", style: "margin:8px 0 0" }, C.results.weakestLabel + ": " + weakName))),
+          h("p", { class: "small", style: "margin:8px 0 0" }, placement),
+          h("p", { class: "small muted", style: "margin:4px 0 0" }, C.results.weakestLabel + ": " + weakName))),
       h("h2", null, pipe(copy.headline)),
       h("p", null, pipe(copy.body)),
       h("h3", { class: "eyebrow", style: "margin-top:8px" }, "By dimension"),
@@ -608,7 +638,7 @@ textarea { min-height: 96px; resize: vertical; font-family: var(--serif); font-s
         h("div", { class: "card" }, h("h3", null, C.results.videoH3.replace("{band}", band.name)), h("p", { class: "small muted", style: "margin:0" }, "The video for this band arrives in your first email.")),
       h("div", { class: "card" },
         h("h3", null, C.results.nextH3),
-        h("p", { style: "margin:0" }, pipe(copy.next))),
+        h("p", { style: "margin:0" }, nextText)),
       offerCard,
       h("p", { class: "disclosure" }, "The two sentences you wrote are scored against my rubric by an AI model. I read a sample every week to keep it honest.",
         r.scoredBy === "heuristic" ? " (In this " + (TEST ? "test build" : "preview") + " the model isn't used, so those two scores are a rough estimate.)" : ""),
