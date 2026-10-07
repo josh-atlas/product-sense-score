@@ -80,11 +80,15 @@ ${analytics}
     body: fill({ ...common, TITLE: title + " (test)", CONFIG_JSON: safeJson({ test: true, videos: {}, ...offerBits }), QUESTIONS_JSON: safeJson(questions) }),
   });
 
+  // docs/ is what GitHub Pages serves. It gets the test build until config.apiUrl points at a real worker,
+  // then the production build (answer key stripped, scoring and email on the worker).
+  const live = !!config.apiUrl && !/YOUR-SUBDOMAIN|REPLACE/.test(config.apiUrl);
+  const pages = live ? prod : test;
   mkdirSync(resolve(root, "dist", slug), { recursive: true });
   mkdirSync(resolve(root, "docs", slug), { recursive: true });
   writeFileSync(resolve(root, "dist", slug, "index.html"), prod);
   writeFileSync(resolve(root, "dist", slug, "preview.html"), preview);
-  writeFileSync(resolve(root, "docs", slug, "index.html"), test);
-  console.log("%s: dist/%s/index.html (%d), dist/%s/preview.html (%d), docs/%s/index.html (%d)", slug, slug, prod.length, slug, preview.length, slug, test.length);
+  writeFileSync(resolve(root, "docs", slug, "index.html"), pages);
+  console.log("%s: dist/%s/index.html (%d), dist/%s/preview.html (%d), docs/%s/index.html (%d, %s)", slug, slug, prod.length, slug, preview.length, slug, pages.length, live ? "production" : "test build");
 }
 writeFileSync(resolve(root, "docs/.nojekyll"), "");
