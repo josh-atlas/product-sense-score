@@ -1,5 +1,5 @@
 {
-  "apiUrl": "https://pss-worker.YOUR-SUBDOMAIN.workers.dev/api/score",
+  "apiUrl": "https://quiz-api.josh-andrew-atlas.workers.dev/api/score",
   "posthog": {
     "key": "phc_xJyrW9UYPC4ZStMK5qtxo8omhQTqnboJsGgrUJ86FaYM",
     "host": "https://us.i.posthog.com"
