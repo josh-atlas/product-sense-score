@@ -408,8 +408,8 @@
     "setupLabel": "The task, in a few words",
     "setupError": "A few words is enough, but I need one task to write the questions around.",
     "gate": {
-      "h2": "Where should I send the breakdown?",
-      "p": "Your score, the dimension costing you most, and a short note from me arrive in a minute. Then a few emails over the next two weeks, one per dimension. Unsubscribe any time."
+      "h2": "Where should I send your note?",
+      "p": "Your score and the full breakdown show on the next screen. I read every submission and send one short note on where you landed. No automated sequence, and you can reply."
     },
     "scoring": {
       "h2": "Scoring your answers",
