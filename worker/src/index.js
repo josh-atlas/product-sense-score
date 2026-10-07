@@ -185,7 +185,13 @@ async function addToKit(env, questions, d) {
       },
     }),
   });
-  if (!sub.ok) throw new Error("kit_subscriber_" + sub.status);
+  if (!sub.ok) {
+    // Most likely cause: a custom field doesn't exist yet in Kit. Keep the email; drop the fields.
+    const bare = await fetch("https://api.kit.com/v4/subscribers", {
+      method: "POST", headers, body: JSON.stringify({ email_address: d.email, first_name: d.name || undefined }),
+    });
+    if (!bare.ok) throw new Error("kit_subscriber_" + sub.status + "_" + bare.status);
+  }
 
   // 2. Tag: band, weakest dimension, role. KIT_TAGS is a JSON map of tag name -> tag id.
   let tags = {};
