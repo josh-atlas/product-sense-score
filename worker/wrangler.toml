@@ -4,17 +4,17 @@ compatibility_date = "2026-09-01"
 
 [vars]
 # Comma-separated list of origins allowed to call the API. Leave empty while testing locally.
-ALLOWED_ORIGIN = "https://joshatlas.co"
+ALLOWED_ORIGIN = "https://josh-atlas.github.io,https://joshatlas.co"
 # Model used to score the two written answers. Check https://docs.claude.com for the current cheapest capable model id.
 ANTHROPIC_MODEL = "claude-haiku-4-5"
 # JSON map of Kit tag name -> tag id. Create the tags in Kit, then paste their ids here.
-KIT_TAGS = "{\"band:reactive\":0,\"band:emerging\":0,\"band:strategic\":0,\"band:leader\":0,\"weakest:orient\":0,\"weakest:reframe\":0,\"weakest:balance\":0,\"weakest:integrate\":0,\"weakest:transmit\":0,\"role:senior_pm\":0,\"role:pm\":0,\"role:eng_design\":0,\"role:founder\":0,\"role:other\":0}"
+KIT_TAGS = "{\"pss:band:reactive\": 0, \"pss:band:emerging\": 0, \"pss:band:strategic\": 0, \"pss:band:leader\": 0, \"pss:weakest:orient\": 0, \"pss:weakest:reframe\": 0, \"pss:weakest:balance\": 0, \"pss:weakest:integrate\": 0, \"pss:weakest:transmit\": 0, \"hbs:band:byhand\": 0, \"hbs:band:adhoc\": 0, \"hbs:band:systematic\": 0, \"hbs:band:operator\": 0, \"hbs:weakest:visibility\": 0, \"hbs:weakest:inputs\": 0, \"hbs:weakest:rules\": 0, \"hbs:weakest:reuse\": 0, \"hbs:weakest:judgment\": 0, \"role:senior_pm\": 0, \"role:pm\": 0, \"role:eng_design\": 0, \"role:founder\": 0, \"role:other\": 0, \"role:multi_pm\": 0, \"role:single_pm\": 0, \"role:lead\": 0}"
 
 # Optional: a D1 database that logs every scored submission (see schema.sql).
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "pss"
-# database_id = "REPLACE"
+[[d1_databases]]
+binding = "DB"
+database_name = "quiz-log"
+database_id = "4981b54a-5495-4772-ba77-c785fb14322b"
 
 # Secrets (never in this file):
 #   npx wrangler secret put ANTHROPIC_API_KEY
