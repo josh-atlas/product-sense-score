@@ -8,13 +8,13 @@
   },
   "offer": {
     "name": "Product Sense Cohort",
-    "when": "Six Wednesdays, next dates to be announced",
-    "what": "One real decision of yours a week, tested in a questions-only format in front of eleven peers.",
-    "seats": "Twelve seats",
+    "when": "Six Wednesdays at 9:30am PT: Nov 4, 11, 18 and Dec 2, 9, 16",
+    "what": "One real decision of yours a week, from the initiative you own, tested in a questions-only hot seat. The room tests your reasoning, not your roadmap: name the tension, not the feature. Your seat lands on the week of your weakest dimension. Pair rounds every week, so nothing goes untested.",
+    "seats": "Eight seats. Runs with five or more.",
     "price": "$499",
-    "deadline": "",
-    "button": "Take a seat",
-    "url": "https://www.skool.com/product-management-circle-6353"
+    "deadline": "Seats close Oct 28. Under five by then and you get a full refund or the next dates.",
+    "button": "Book a 20-minute fit call",
+    "url": "https://calendar.app.google/hNGics4Si6au7EPt8"
   },
   "secondary": {
     "reactive": {
@@ -22,14 +22,8 @@
       "url": "https://www.skool.com/product-management-circle-6353"
     },
     "emerging": null,
-    "strategic": {
-      "label": "Want to talk it through first? Book a 20-minute score review.",
-      "url": "https://calendar.app.google/hNGics4Si6au7EPt8"
-    },
-    "leader": {
-      "label": "Thinking about your team, not just you? Book a 20-minute review.",
-      "url": "https://calendar.app.google/hNGics4Si6au7EPt8"
-    }
+    "strategic": null,
+    "leader": null
   },
   "posthog": {
     "key": "phc_xJyrW9UYPC4ZStMK5qtxo8omhQTqnboJsGgrUJ86FaYM",
