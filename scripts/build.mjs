@@ -67,7 +67,7 @@ posthog.init(${JSON.stringify(ph.key)}, { api_host: ${JSON.stringify(ph.host || 
 <meta property="og:description" content="${esc(meta.ogDescription || meta.description || title)}">
 ${analytics}
 <!-- Meta pixel and LinkedIn Insight Tag go here once the accounts exist. Install on day one, before any spend. -->`,
-    body: fill({ ...common, CONFIG_JSON: safeJson({ preview: false, apiUrl: config.apiUrl, videos: config.videos, ...offerBits }), QUESTIONS_JSON: safeJson(publicQ) }),
+    body: fill({ ...common, CONFIG_JSON: safeJson({ preview: false, apiUrl: config.apiUrl, turnstileSiteKey: config.turnstileSiteKey || "", videos: config.videos, ...offerBits }), QUESTIONS_JSON: safeJson(publicQ) }),
   });
 
   // Preview (artifact): fragment, key included, sample capability grades the sentences.
