@@ -65,6 +65,12 @@ Edit `wrangler.toml` first: `ALLOWED_ORIGIN` (the site's origin), `ANTHROPIC_MOD
 
 Optional log of every submission (so you can read the first 50 sentences): create a D1 database, uncomment the `[[d1_databases]]` block, then `npx wrangler d1 execute pss --file=schema.sql`. Read it later with `npx wrangler d1 execute pss --command "select created_at, initiative, w1, w1_score, w1_reason, w2, w2_score, w2_reason from submissions order by id desc limit 50"`.
 
+## Abuse controls (added Oct 16, 2026)
+
+The worker refuses or throttles before any paid call. In order: Origin must be on `ALLOWED_ORIGIN`; a hidden honeypot field (`website`) must be empty; a Cloudflare Turnstile token must verify when `TURNSTILE_SECRET` is set; at most `RATE_LIMIT_PER_10MIN` submissions per IP (hashed, in D1); sentences identical to one the same email submitted in the last 24h reuse the stored grade; more than `EMAIL_DAILY_CAP` new grades per email per day, or more than `DAILY_CLAUDE_CAP` submissions per day, get a placeholder score instead of a Claude call; past `DAILY_LOG_CAP` nothing is logged. Each control is skipped when its config is absent. Dashboard deploy (no wrangler): paste `worker/dist/worker.bundle.js` (regenerate with `node scripts/bundle-worker.mjs` after any change to `worker/src/index.js` or either `questions.json`), add the vars in Settings, run the new statements in `worker/schema.sql` in the D1 console.
+
+Turnstile, once: Cloudflare dashboard > Turnstile > Add widget (hostnames `josh-atlas.github.io` and `joshatlas.co`, mode Managed). Put the site key in each `quizzes/<slug>/config.json` as `turnstileSiteKey` and rebuild; add the secret key to the worker as the `TURNSTILE_SECRET` secret. Until both are set, the page shows no widget and the worker skips the check. The only money cap outside this code is the monthly spend limit on the Anthropic console; set it.
+
 ## Kit setup (once)
 
 1. Plan: Creator (the free plan allows one automation; this needs four).
