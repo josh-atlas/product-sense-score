@@ -203,18 +203,73 @@
     );
   }
 
+  // ---------- bot check (Cloudflare Turnstile) ----------
+  // Loaded only on the gate screen, only when the build has a site key. The token travels with the submission;
+  // the worker verifies it. Without a site key the page behaves exactly as before.
+  let tsToken = null, tsWidget = null, tsFailed = false;
+  function loadTurnstile(container) {
+    if (!CONFIG.turnstileSiteKey || LOCAL) return;
+    const render = () => {
+      try { if (tsWidget != null) window.turnstile.remove(tsWidget); } catch (e) {}
+      tsWidget = null;
+      try {
+        tsWidget = window.turnstile.render(container, {
+          sitekey: CONFIG.turnstileSiteKey, appearance: "interaction-only", theme: "light",
+          callback: (t) => { tsToken = t; tsFailed = false; },
+          "expired-callback": () => { tsToken = null; },
+          "error-callback": () => { tsToken = null; tsFailed = true; },
+        });
+      } catch (e) { tsFailed = true; }
+    };
+    if (window.turnstile) return render();
+    window.__pssTurnstileReady = render;
+    if (!document.getElementById("cf-turnstile-script")) {
+      const sc = document.createElement("script");
+      sc.id = "cf-turnstile-script"; sc.async = true; sc.defer = true;
+      sc.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=__pssTurnstileReady&render=explicit";
+      sc.onerror = () => { tsFailed = true; };
+      document.head.appendChild(sc);
+    }
+  }
+  function waitForToken(ms) {
+    if (!CONFIG.turnstileSiteKey || LOCAL) return Promise.resolve(null);
+    return new Promise((resolve) => {
+      const t0 = Date.now();
+      (function poll() {
+        if (tsToken) return resolve(tsToken);
+        if (tsFailed || Date.now() - t0 > ms) return resolve(null);
+        setTimeout(poll, 150);
+      })();
+    });
+  }
+  function friendlyError(code) {
+    if (code === "bot_check_failed") return "The bot check didn't pass. If you use an ad blocker, allow challenges.cloudflare.com for this page and try again.";
+    if (code === "rate_limited") return "Too many attempts from your network in the last ten minutes. Give it a little while and try again.";
+    if (code === "origin") return "This page can only submit from joshatlas.co.";
+    if (code === "spam") return "That submission looked automated. If it wasn't, reload the page and try again.";
+    return "Something went wrong scoring your answers. Your answers are saved on this page; try again in a moment.";
+  }
+
   function viewGate() {
     track("gate_view");
     const email = h("input", { type: "email", id: "email", placeholder: "you@company.com", value: state.email, autocomplete: "email", required: true });
     const name = h("input", { type: "text", id: "name", placeholder: "First name (optional)", value: state.name, autocomplete: "given-name" });
+    // Honeypot: hidden from people, filled by naive bots. The worker rejects anything with a value here.
+    const trap = h("input", { type: "text", name: "website", id: "website", tabindex: "-1", autocomplete: "off", "aria-hidden": "true", style: "position:absolute;left:-9999px;top:auto;width:1px;height:1px;opacity:0" });
+    const tsBox = h("div", { class: "turnstile", style: "margin:8px 0" });
     const err = h("div", { class: "error", "aria-live": "polite" });
-    const form = h("form", { class: "screen gate", onsubmit: (e) => {
+    const submitBtn = h("button", { class: "btn", type: "submit" }, "Show my score");
+    const form = h("form", { class: "screen gate", onsubmit: async (e) => {
       e.preventDefault();
       const v = email.value.trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { err.textContent = "That email doesn't look complete."; email.focus(); return; }
-      state.email = v; state.name = name.value.trim(); save(); track("email_submitted");
+      state.email = v; state.name = name.value.trim(); state.trap = trap.value; save(); track("email_submitted");
       try { if (window.posthog && window.posthog.identify) window.posthog.identify(v, { name: state.name || undefined, role: state.role }); } catch (e) {}
-      go("scoring"); runScoring();
+      // Wait for the bot check here, while its widget is still on the page; leaving the gate would destroy it.
+      submitBtn.disabled = true; submitBtn.textContent = "One moment";
+      state.tsToken = await waitForToken(8000);
+      go("scoring");
+      runScoring();
     } },
       h("div", { class: "eyebrow" }, "Your score is ready"),
       h("div", { class: "blur-band", "aria-hidden": "true" }, Q.bands[Q.bands.length - 1].name),
@@ -222,12 +277,15 @@
       h("p", { class: "muted" }, C.gate.p),
       h("div", { class: "field" }, h("label", { for: "email" }, "Email"), email),
       h("div", { class: "field" }, h("label", { for: "name" }, "Name"), name),
+      trap,
+      tsBox,
       err,
       LOCAL ? h("div", { class: "notice" }, "This build stores nothing and sends no email. Enter anything with an @ to see the results page.") : null,
       h("div", { class: "row" },
-        h("button", { class: "btn", type: "submit" }, "Show my score"),
+        submitBtn,
         h("button", { class: "link", type: "button", onclick: back }, "Back")),
     );
+    setTimeout(() => loadTurnstile(tsBox), 0);
     return form;
   }
 
@@ -323,9 +381,14 @@
           body: JSON.stringify({
             quiz: Q.slug, email: state.email, name: state.name, role: state.role, initiative: state.initiative,
             answers: state.mc, written: state.written, source: state.source, version: Q.version,
+            turnstile: state.tsToken || undefined, website: state.trap || undefined,
           }),
         });
-        if (!res.ok) throw new Error("score_failed_" + res.status);
+        if (!res.ok) {
+          let code = "score_failed_" + res.status;
+          try { const j = await res.json(); if (j && j.error) code = j.error; } catch (e) {}
+          throw new Error(code);
+        }
         result = await res.json();
       }
       const weakest = Q.dimensions.reduce((a, b) => (result.sub[b] < result.sub[a] ? b : a));
@@ -334,11 +397,16 @@
       track("scored", { band: result.band, weakest });
       go("results");
     } catch (e) {
+      const code = String(e && e.message);
       const st = $("#scoring-status");
-      if (st) st.textContent = "Something went wrong scoring your answers. Your answers are saved on this page; try again in a moment.";
-      const btn = h("button", { class: "btn", onclick: () => { st.textContent = "Trying again."; runScoring(); } }, "Try again");
+      if (st) st.textContent = friendlyError(code);
+      const retry = async () => {
+        if (code === "bot_check_failed") { tsToken = null; tsFailed = false; go("gate"); return; }
+        st.textContent = "Trying again."; state.tsToken = await waitForToken(8000); runScoring();
+      };
+      const btn = h("button", { class: "btn", onclick: retry }, code === "bot_check_failed" ? "Back" : "Try again");
       app.append(h("div", { class: "row" }, btn));
-      track("score_error", { message: String(e && e.message) });
+      track("score_error", { message: code });
     }
   }
 
