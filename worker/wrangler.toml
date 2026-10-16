@@ -7,6 +7,11 @@ compatibility_date = "2026-09-01"
 ALLOWED_ORIGIN = "https://josh-atlas.github.io,https://joshatlas.co"
 # Model used to score the two written answers. Check https://docs.claude.com for the current cheapest capable model id.
 ANTHROPIC_MODEL = "claude-haiku-4-5"
+# Abuse controls (see the header comment in src/index.js). All optional; defaults in code match these.
+RATE_LIMIT_PER_10MIN = "5"
+DAILY_CLAUDE_CAP = "300"
+DAILY_LOG_CAP = "2000"
+EMAIL_DAILY_CAP = "3"
 # JSON map of Kit tag name -> tag id. Create the tags in Kit, then paste their ids here.
 KIT_TAGS = "{\"pss:band:reactive\": 0, \"pss:band:emerging\": 0, \"pss:band:strategic\": 0, \"pss:band:leader\": 0, \"pss:weakest:orient\": 0, \"pss:weakest:reframe\": 0, \"pss:weakest:balance\": 0, \"pss:weakest:integrate\": 0, \"pss:weakest:transmit\": 0, \"hbs:band:byhand\": 0, \"hbs:band:adhoc\": 0, \"hbs:band:systematic\": 0, \"hbs:band:operator\": 0, \"hbs:weakest:visibility\": 0, \"hbs:weakest:inputs\": 0, \"hbs:weakest:rules\": 0, \"hbs:weakest:reuse\": 0, \"hbs:weakest:judgment\": 0, \"role:senior_pm\": 0, \"role:pm\": 0, \"role:eng_design\": 0, \"role:founder\": 0, \"role:other\": 0, \"role:multi_pm\": 0, \"role:single_pm\": 0, \"role:lead\": 0}"
 
@@ -18,4 +23,5 @@ database_id = "4981b54a-5495-4772-ba77-c785fb14322b"
 
 # Secrets (never in this file):
 #   npx wrangler secret put ANTHROPIC_API_KEY
+#   npx wrangler secret put TURNSTILE_SECRET   (Turnstile widget secret key; the site key goes in quizzes/<slug>/config.json)
 #   npx wrangler secret put KIT_API_KEY
