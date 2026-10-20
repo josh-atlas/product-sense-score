@@ -1,6 +1,6 @@
 {
   "apiUrl": "https://quiz-api.josh-andrew-atlas.workers.dev/api/score",
-  "turnstileSiteKey": "",
+  "turnstileSiteKey": "0x4AAAAAAFYLrj9324fByWRw",
   "videos": {
     "reactive": "",
     "emerging": "",
