@@ -21,3 +21,19 @@ CREATE TABLE IF NOT EXISTS ip_hits (
 );
 CREATE INDEX IF NOT EXISTS idx_ip_hits ON ip_hits (ip_hash, ts);
 CREATE INDEX IF NOT EXISTS idx_submissions_email ON submissions (quiz, email, created_at);
+
+-- Added Nov 8, 2026: paid seats from Stripe Checkout (webhook /api/stripe-webhook; read by /api/seats). Safe to re-run.
+CREATE TABLE IF NOT EXISTS purchases (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_at TEXT,
+  product TEXT NOT NULL,
+  session_id TEXT UNIQUE,
+  payment_intent TEXT,
+  email TEXT,
+  name TEXT,
+  amount INTEGER,
+  currency TEXT,
+  status TEXT,
+  reference TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_purchases_product ON purchases (product, status);
