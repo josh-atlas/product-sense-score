@@ -1,0 +1,21 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap">
+<style>
+{{STYLES}}
+.steps { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.steps li { display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: start; }
+.steps li::before { counter-increment: step; content: counter(step); width: 28px; height: 28px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-weight: 600; display: grid; place-items: center; font-size: 14px; }
+</style>
+<main class="pss-wrap">
+  <div class="pss-brand"><b>{{BRAND_NAME}}</b><span>{{BRAND_BY}}</span></div>
+  <section class="screen">
+    <div class="eyebrow">{{EYEBROW}}</div>
+    <h1>{{HEADLINE}}</h1>
+    <p>{{LEAD}}</p>
+    <ol class="steps">{{STEPS}}</ol>
+    <div class="row" style="margin-top:18px">
+      <a class="btn" href="{{CALL_URL}}" target="_blank" rel="noopener">{{CALL_LABEL}}</a>
+      <a class="link" href="{{BACK_URL}}">{{BACK_LABEL}}</a>
+    </div>
+  </section>
+</main>

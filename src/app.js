@@ -56,6 +56,24 @@
     } catch (e) {}
   }
 
+  // Meta pixel, when the build injected one. Events: Lead on results, InitiateCheckout on the buy click; Purchase fires on the thanks page.
+  function pixel(event, props) {
+    try { if (window.fbq) window.fbq("track", event, props || {}); } catch (e) {}
+  }
+
+  // Stripe Payment Links accept prefilled_email and client_reference_id as query params. The reference carries the
+  // product (the worker's webhook reads it before the first underscore), band, weakest dimension and source.
+  function checkoutUrl(url, checkout, band) {
+    try {
+      const u = new URL(url);
+      if (state.email) u.searchParams.set("prefilled_email", state.email);
+      const ref = [checkout.product, band.id, state.result && state.result.weakest, state.source || "direct"]
+        .filter(Boolean).map((s) => String(s).replace(/[^A-Za-z0-9-]/g, "-")).join("_").slice(0, 200);
+      u.searchParams.set("client_reference_id", ref);
+      return u.toString();
+    } catch (e) { return url; }
+  }
+
   // ---------- rendering ----------
   const app = $("#app");
   const bar = $("#progress > div");
@@ -446,15 +464,55 @@
     track("results_view", { band: band.id });
 
     // The ask. Same offer on every band; the copy above it is what changes.
+    // With CONFIG.checkout the button is a Stripe Payment Link (email prefilled, quiz context in client_reference_id),
+    // the seat line is live from /api/seats, and the card flips to sold out at the cap. Without it, the old call button.
+    // Until offer.url is set (the Payment Link doesn't exist yet), the button falls back to the call link.
+    const live = !!(offer && offer.url);
+    const checkout = CONFIG.checkout && live ? CONFIG.checkout : null;
+    const talk = offer && offer.talk && offer.talk.url ? offer.talk : null;
+    const buyHref = checkout ? checkoutUrl(offer.url, checkout, band) : (live ? offer.url : (talk ? talk.url : ""));
+    const buyLabel = live || !talk ? offer && offer.button : (offer.fallbackButton || "Book a 30-minute fit call");
+    const seatLine = h("p", { style: "margin:0 0 12px" }, offer ? [offer.seats, offer.price, offer.deadline].filter(Boolean).join(" · ") : "");
+    const buyBtn = offer ? h("a", { class: "btn", href: buyHref, target: "_blank", rel: "noopener", onclick: () => {
+      track(checkout ? "checkout_click" : "offer_click", { band: band.id, weakest: r.weakest });
+      if (checkout) pixel("InitiateCheckout", { value: checkout.value, currency: checkout.currency || "USD", content_name: offer.name });
+    } }, buyLabel) : null;
+    const talkLine = talk && live ? h("p", { class: "small", style: "margin:12px 0 0" },
+      h("a", { href: talk.url, target: "_blank", rel: "noopener", onclick: () => track("talk_click", { band: band.id }) }, talk.label)) : null;
     const offerCard = offer ? h("div", { class: "card offer" },
       h("div", { class: "eyebrow" }, "The next step"),
       h("h3", null, offer.name),
       h("p", { style: "margin:0 0 6px" }, offer.when),
       h("p", { style: "margin:0 0 6px" }, offer.what),
-      h("p", { style: "margin:0 0 12px" }, [offer.seats, offer.price, offer.deadline].filter(Boolean).join(" · ")),
-      h("a", { class: "btn", href: offer.url, target: "_blank", rel: "noopener", onclick: () => track("offer_click", { band: band.id }) }, offer.button),
+      seatLine,
+      buyBtn,
+      talkLine,
       secondary ? h("p", { class: "small", style: "margin:12px 0 0" },
         h("a", { href: secondary.url, target: "_blank", rel: "noopener", onclick: () => track("secondary_click", { band: band.id }) }, secondary.label)) : null) : null;
+
+    // Seats left, then sold out. A manual override in config wins; otherwise the worker's count.
+    function showSoldOut() {
+      const so = offer.soldOut || {};
+      seatLine.textContent = so.text || "All seats are taken.";
+      const dead = h("span", { class: "btn", "aria-disabled": "true", style: "display:block;text-align:center;opacity:.5;cursor:default" }, so.button || "Sold out");
+      buyBtn.replaceWith(dead);
+      if (talkLine) talkLine.firstChild.textContent = so.linkLabel || talkLine.firstChild.textContent;
+      track("sold_out_view", { band: band.id });
+    }
+    if (offer && offer.soldOutOverride) showSoldOut();
+    else if (checkout && CONFIG.apiUrl) {
+      fetch(CONFIG.apiUrl.replace(/\/api\/score\/?$/, "") + "/api/seats?product=" + encodeURIComponent(checkout.product), { cache: "no-store" })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((s) => {
+          if (!s || typeof s.left !== "number") return;
+          if (s.soldOut) return showSoldOut();
+          const words = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+          const left = (words[s.left] || String(s.left)) + " of " + (words[s.cap] || String(s.cap)) + " seats left";
+          seatLine.textContent = [left.charAt(0).toUpperCase() + left.slice(1), offer.price, offer.deadline].filter(Boolean).join(" · ");
+        })
+        .catch(() => {});
+    }
+    if (checkout && !state.leadSent) { pixel("Lead", { content_name: Q.title, content_category: band.id }); state.leadSent = true; save(); }
 
     const dims = h("div", { class: "dims" },
       Q.dimensions.map((d) => h("div", { class: "dim" + (d === r.weakest ? " weak" : "") },
