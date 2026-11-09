@@ -13,6 +13,7 @@ const read = (p) => readFileSync(resolve(root, p), "utf8");
 const styles = read("src/styles.css");
 const app = read("src/app.js");
 const tpl = read("src/page.html");
+const thanksTpl = read("src/thanks.html");
 const safeJson = (o) => JSON.stringify(o).replace(/</g, "\\u003c");
 const fill = (vars) => tpl.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
@@ -49,6 +50,9 @@ for (const slug of slugs) {
 
   const common = { TITLE: title, STYLES: styles, APP_JS: app, BRAND_NAME: esc(brand.name), BRAND_BY: esc(brand.by) };
   const offerBits = { offer: config.offer, secondary: config.secondary };
+  // Checkout (Stripe Payment Link in offer.url): product id for /api/seats, value and currency for the pixel. Thanks copy stays out of the page.
+  const ck = config.checkout || null;
+  const checkoutBits = ck ? { checkout: { product: ck.product, cap: ck.cap, value: ck.value, currency: ck.currency } } : {};
 
   // PostHog: funnels per question and session replay on the free tier. Leave key empty to ship without analytics.
   const ph = config.posthog || {};
@@ -59,6 +63,18 @@ posthog.init(${JSON.stringify(ph.key)}, { api_host: ${JSON.stringify(ph.host || 
 </script>`
     : "";
 
+  // Meta pixel: only when config.metaPixelId is set. PageView here; the app fires Lead (results) and InitiateCheckout (buy click);
+  // the thanks page fires Purchase. Leave the id empty to ship without it.
+  const pixelId = String(config.metaPixelId || "").replace(/\D/g, "");
+  const pixelHead = pixelId
+    ? `<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '${pixelId}');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1" alt=""></noscript>`
+    : "";
+
   // Production
   const prod = doc({
     title,
@@ -66,8 +82,8 @@ posthog.init(${JSON.stringify(ph.key)}, { api_host: ${JSON.stringify(ph.host || 
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(meta.ogDescription || meta.description || title)}">
 ${analytics}
-<!-- Meta pixel and LinkedIn Insight Tag go here once the accounts exist. Install on day one, before any spend. -->`,
-    body: fill({ ...common, CONFIG_JSON: safeJson({ preview: false, apiUrl: config.apiUrl, turnstileSiteKey: config.turnstileSiteKey || "", videos: config.videos, ...offerBits }), QUESTIONS_JSON: safeJson(publicQ) }),
+${pixelHead || "<!-- Meta pixel goes here: set metaPixelId in config.json. Install on day one, before any spend. -->"}`,
+    body: fill({ ...common, CONFIG_JSON: safeJson({ preview: false, apiUrl: config.apiUrl, turnstileSiteKey: config.turnstileSiteKey || "", videos: config.videos, ...offerBits, ...checkoutBits }), QUESTIONS_JSON: safeJson(publicQ) }),
   });
 
   // Preview (artifact): fragment, key included, sample capability grades the sentences.
@@ -89,6 +105,28 @@ ${analytics}
   writeFileSync(resolve(root, "dist", slug, "index.html"), prod);
   writeFileSync(resolve(root, "dist", slug, "preview.html"), preview);
   writeFileSync(resolve(root, "docs", slug, "index.html"), pages);
+
+  // Thanks page: where the Stripe Payment Link sends people after paying. Fires the pixel's Purchase event.
+  if (ck && ck.thanks) {
+    const t = ck.thanks;
+    const steps = (t.steps || []).map((x) => "<li><span>" + esc(x) + "</span></li>").join("");
+    const purchase = pixelId
+      ? `<script>try{fbq('track','Purchase',{value:${Number(ck.value) || 0},currency:${JSON.stringify(ck.currency || "USD")},content_name:${JSON.stringify(config.offer && config.offer.name || title)}});}catch(e){}</script>`
+      : "";
+    const thanksBody = thanksTpl.replace(/\{\{(\w+)\}\}/g, (_, k) => ({
+      STYLES: styles, BRAND_NAME: esc(brand.name), BRAND_BY: esc(brand.by),
+      EYEBROW: esc(t.eyebrow || ""), HEADLINE: esc(t.headline || "Thank you."), LEAD: esc(t.lead || ""), STEPS: steps,
+      CALL_URL: esc(t.callUrl || "#"), CALL_LABEL: esc(t.callLabel || "Book a call"), BACK_URL: esc(t.backUrl || "../"), BACK_LABEL: esc(t.backLabel || "Back"),
+    })[k] ?? "");
+    const thanks = doc({
+      title: (t.headline || "Thank you") + " · " + title,
+      head: `<meta name="robots" content="noindex">\n${analytics}\n${pixelHead}\n<script>try{window.posthog&&posthog.capture("purchase_thanks",{quiz:${JSON.stringify(slug)}})}catch(e){}</script>${purchase}`,
+      body: thanksBody,
+    });
+    mkdirSync(resolve(root, "docs", slug, "thanks"), { recursive: true });
+    writeFileSync(resolve(root, "docs", slug, "thanks", "index.html"), thanks);
+    console.log("%s: docs/%s/thanks/index.html (%d)", slug, slug, thanks.length);
+  }
   console.log("%s: dist/%s/index.html (%d), dist/%s/preview.html (%d), docs/%s/index.html (%d, %s)", slug, slug, prod.length, slug, preview.length, slug, pages.length, live ? "production" : "test build");
 }
 writeFileSync(resolve(root, "docs/.nojekyll"), "");
