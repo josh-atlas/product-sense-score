@@ -2,9 +2,11 @@
 // Quiz API (Product Sense Score, Hours Back Score, ...). Cloudflare Worker.
 // POST /api/score  { quiz, email, name, role, initiative, answers:{q1..q8: optionIndex}, written:{w1,w2}, source, version, turnstile, website }
 // -> { total, sub:{orient..transmit}, band, written:{w1:{score,reason}, w2:{...}}, scoredBy }
+// GET  /api/seats?product=pss-cohort  -> { cap, sold, left, soldOut }   (results card: seats left, sold-out switch)
+// POST /api/stripe-webhook            Stripe checkout.session.completed / charge.refunded, signature-verified
 //
-// Secrets (wrangler secret put ...): ANTHROPIC_API_KEY, TURNSTILE_SECRET, KIT_API_KEY
-// Vars (wrangler.toml [vars]): ALLOWED_ORIGIN, ANTHROPIC_MODEL, RATE_LIMIT_PER_10MIN, DAILY_CLAUDE_CAP, DAILY_LOG_CAP, EMAIL_DAILY_CAP, KIT_TAGS
+// Secrets (wrangler secret put ...): ANTHROPIC_API_KEY, TURNSTILE_SECRET, STRIPE_WEBHOOK_SECRET, KIT_API_KEY
+// Vars (wrangler.toml [vars]): ALLOWED_ORIGIN, ANTHROPIC_MODEL, RATE_LIMIT_PER_10MIN, DAILY_CLAUDE_CAP, DAILY_LOG_CAP, EMAIL_DAILY_CAP, PSS_COHORT_CAP, KIT_TAGS
 // Binding: DB (D1) logs every scored submission and backs the rate limit, the daily caps and the per-email reuse (see schema.sql).
 //
 // Abuse controls, in the order a request meets them:
@@ -896,6 +898,26 @@ export default {
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
 
     const url = new URL(request.url);
+
+    // Seats left for a capped product (the results card reads this to show "3 of 8 left" and to switch to sold out).
+    if (request.method === "GET" && url.pathname === "/api/seats") {
+      const product = String(url.searchParams.get("product") || "").slice(0, 40);
+      const p = PRODUCTS(env)[product];
+      if (!p) return json({ error: "unknown_product" }, 404, cors);
+      const sold = await countSold(env, product);
+      return json({ product, cap: p.cap, sold, left: Math.max(0, p.cap - sold), soldOut: sold >= p.cap }, 200, Object.assign({ "cache-control": "no-store" }, cors));
+    }
+
+    // Stripe sends checkout.session.completed here. Signature is verified with STRIPE_WEBHOOK_SECRET; no secret, no writes.
+    if (request.method === "POST" && url.pathname === "/api/stripe-webhook") {
+      try {
+        const out = await stripeWebhook(request, env);
+        return json(out, 200, {});
+      } catch (e) {
+        return json({ error: e && e.message ? e.message : "error" }, e && e.status ? e.status : 500, {});
+      }
+    }
+
     if (request.method === "POST" && url.pathname === "/api/score") {
       if (!originAllowed(env, origin)) return json({ error: "origin" }, 403, cors);
       try {
@@ -923,7 +945,7 @@ function corsHeaders(env, origin) {
   const ok = allowed.length === 0 || allowed.includes(origin);
   return {
     "Access-Control-Allow-Origin": ok ? origin || "*" : allowed[0],
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "content-type",
     "Vary": "Origin",
   };
@@ -1216,4 +1238,78 @@ async function logSubmission(env, d) {
     d.written.w2 || "", d.w.w2.score, d.w.w2.reason,
     d.total, d.band, d.weakest, JSON.stringify(d.sub), d.source, d.version, d.w.scoredBy
   ).run();
+}
+
+// ---------- Checkout: capped products, Stripe webhook, seat count ----------
+// One row per paid Stripe Checkout session (see schema.sql, table purchases). The results card calls GET /api/seats
+// to show seats left and to switch to "sold out" once the cap is reached. Stripe's own "limit the number of payments"
+// setting on the Payment Link is the hard stop; this is the soft stop that keeps the page honest between the two.
+function PRODUCTS(env) {
+  return {
+    "pss-cohort": { cap: num(env.PSS_COHORT_CAP, 8) },
+  };
+}
+async function countSold(env, product) {
+  if (!env.DB) return 0;
+  try {
+    const row = await env.DB.prepare("SELECT COUNT(*) AS n FROM purchases WHERE product = ? AND status = 'paid'").bind(product).first();
+    return row ? Number(row.n) || 0 : 0;
+  } catch (e) { return 0; }
+}
+
+// Verifies the Stripe-Signature header (t=<unix>,v1=<hmac sha256 of "<t>.<raw body>" with the endpoint secret),
+// then records paid sessions and refunds. Idempotent on session id, so Stripe's retries are safe.
+async function stripeWebhook(request, env) {
+  if (!env.STRIPE_WEBHOOK_SECRET) throw fail("webhook_not_configured", 503);
+  const raw = await request.text();
+  const sig = request.headers.get("Stripe-Signature") || "";
+  const parts = Object.fromEntries(sig.split(",").map((kv) => kv.split("=").map((s) => s.trim())).filter((p) => p.length === 2));
+  const t = Number(parts.t);
+  const v1 = sig.split(",").map((s) => s.trim()).filter((s) => s.startsWith("v1=")).map((s) => s.slice(3));
+  if (!t || !v1.length) throw fail("bad_signature", 400);
+  if (Math.abs(Date.now() / 1000 - t) > 300) throw fail("stale_signature", 400);
+  const expected = await hmacHex(env.STRIPE_WEBHOOK_SECRET, t + "." + raw);
+  if (!v1.some((s) => timingSafeEqual(s, expected))) throw fail("bad_signature", 400);
+
+  let event;
+  try { event = JSON.parse(raw); } catch (e) { throw fail("bad_json", 400); }
+  const type = String(event.type || "");
+  const obj = (event.data && event.data.object) || {};
+
+  if (type === "checkout.session.completed" || type === "checkout.session.async_payment_succeeded") {
+    if (obj.payment_status && obj.payment_status !== "paid") return { ok: true, ignored: "unpaid:" + obj.payment_status };
+    const ref = String(obj.client_reference_id || "");
+    const product = String((obj.metadata && obj.metadata.product) || ref.split("_")[0] || "pss-cohort").slice(0, 40);
+    if (!PRODUCTS(env)[product]) return { ok: true, ignored: "unknown_product:" + product };
+    const email = String((obj.customer_details && obj.customer_details.email) || obj.customer_email || "").toLowerCase().slice(0, 254);
+    const name = String((obj.customer_details && obj.customer_details.name) || "").slice(0, 120);
+    if (env.DB) {
+      await env.DB.prepare(
+        "INSERT OR IGNORE INTO purchases (created_at, product, session_id, payment_intent, email, name, amount, currency, status, reference) VALUES (?,?,?,?,?,?,?,?,?,?)"
+      ).bind(
+        new Date((Number(obj.created) || Date.now() / 1000) * 1000).toISOString(), product, String(obj.id || ""),
+        String(obj.payment_intent || ""), email, name, Number(obj.amount_total) || 0, String(obj.currency || ""), "paid", ref.slice(0, 200)
+      ).run();
+    }
+    const sold = await countSold(env, product);
+    return { ok: true, recorded: product, sold, cap: PRODUCTS(env)[product].cap };
+  }
+
+  if (type === "charge.refunded" && obj.payment_intent && env.DB) {
+    await env.DB.prepare("UPDATE purchases SET status = 'refunded' WHERE payment_intent = ?").bind(String(obj.payment_intent)).run();
+    return { ok: true, refunded: String(obj.payment_intent) };
+  }
+
+  return { ok: true, ignored: type };
+}
+async function hmacHex(secret, message) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(message));
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+function timingSafeEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
+  let r = 0;
+  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return r === 0;
 }
