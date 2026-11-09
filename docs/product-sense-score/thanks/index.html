@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Your seat is held. · Product Sense Score</title>
+<meta name="robots" content="noindex">
+<script>
+!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init("phc_xJyrW9UYPC4ZStMK5qtxo8omhQTqnboJsGgrUJ86FaYM", { api_host: "https://us.i.posthog.com", person_profiles: "identified_only", capture_pageview: true, session_recording: { maskAllInputs: true } });
+</script>
+
+<script>try{window.posthog&&posthog.capture("purchase_thanks",{quiz:"product-sense-score"})}catch(e){}</script>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap">
+<style>
+:root {
+  --paper: #FBF8F3;
+  --paper-2: #F2ECE3;
+  --ink: #221B1E;
+  --ink-2: #5E5257;
+  --line: #E2D9CF;
+  --accent: #750D37;
+  --accent-ink: #FFFFFF;
+  --green: #4F7D5C;
+  --sage: #BFD4AD;
+  --sage-ink: #24371F;
+  --warn: #9A5B1F;
+  --focus: #2F6FDE;
+  --serif: "Georgia Pro", Georgia, "Times New Roman", serif;
+  --sans: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+  --max: 640px;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #17131A;
+    --paper-2: #221C26;
+    --ink: #F3ECE6;
+    --ink-2: #B8ACB0;
+    --line: #3A3139;
+    --accent: #E38DAB;
+    --accent-ink: #2A0713;
+    --green: #8FBF9A;
+    --sage: #2F4A34;
+    --sage-ink: #D9EBCF;
+    --warn: #E0A860;
+    --focus: #8BB4FF;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #17131A;
+  --paper-2: #221C26;
+  --ink: #F3ECE6;
+  --ink-2: #B8ACB0;
+  --line: #3A3139;
+  --accent: #E38DAB;
+  --accent-ink: #2A0713;
+  --green: #8FBF9A;
+  --sage: #2F4A34;
+  --sage-ink: #D9EBCF;
+  --warn: #E0A860;
+  --focus: #8BB4FF;
+}
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+.pss-progress {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  height: 4px; background: var(--line);
+}
+.pss-progress > div { height: 100%; width: 0; background: var(--green); transition: width .3s ease; }
+
+.pss-wrap {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding-inline: 20px;
+  padding-block: 28px 56px;
+}
+.pss-brand {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2);
+  margin-bottom: 28px;
+}
+.pss-brand b { color: var(--accent); font-weight: 700; letter-spacing: .1em; }
+
+h1, h2 {
+  font-family: var(--serif); font-weight: 400; line-height: 1.2; text-wrap: balance; margin: 0 0 12px;
+}
+h1 { font-size: clamp(30px, 5vw, 40px); }
+h2 { font-size: clamp(22px, 4vw, 28px); }
+p { margin: 0 0 14px; max-width: 62ch; }
+.muted { color: var(--ink-2); }
+.small { font-size: 14px; }
+.eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 10px; }
+
+.screen { display: grid; gap: 16px; }
+.screen[hidden] { display: none; }
+
+.options { display: grid; gap: 10px; margin-top: 6px; }
+.opt {
+  display: block; width: 100%; text-align: left;
+  font: inherit; color: var(--ink); background: var(--paper-2);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 16px; cursor: pointer; line-height: 1.45;
+  transition: border-color .15s, background .15s;
+}
+.opt:hover { border-color: var(--accent); }
+.opt[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
+.field { display: grid; gap: 8px; }
+label { font-weight: 600; }
+input[type="text"], input[type="email"], textarea {
+  font: inherit; color: var(--ink); background: var(--paper-2);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 12px 14px; width: 100%;
+}
+textarea { min-height: 96px; resize: vertical; font-family: var(--serif); font-size: 17px; }
+.help { font-size: 13.5px; color: var(--ink-2); line-height: 1.5; max-width: 62ch; }
+.count { font-size: 12px; color: var(--ink-2); text-align: right; font-variant-numeric: tabular-nums; }
+
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 6px; }
+.btn {
+  font: inherit; font-weight: 600; font-size: 15px;
+  background: var(--accent); color: var(--accent-ink);
+  border: 0; border-radius: 999px; padding: 12px 22px; cursor: pointer;
+}
+.btn:disabled { opacity: .5; cursor: default; }
+.btn.ghost { background: transparent; color: var(--ink-2); border: 1px solid var(--line); }
+.link { background: none; border: 0; padding: 0; font: inherit; color: var(--ink-2); text-decoration: underline; cursor: pointer; }
+
+.notice {
+  background: var(--sage); color: var(--sage-ink);
+  border-radius: var(--radius); padding: 12px 14px; font-size: 14px;
+}
+.error { color: var(--warn); font-size: 14px; }
+
+.gate { position: relative; }
+.blur-band {
+  font-family: var(--serif); font-size: 26px; filter: blur(7px); user-select: none; color: var(--accent);
+  margin-bottom: 6px;
+}
+
+/* Results */
+.score-hero { display: grid; grid-template-columns: 132px 1fr; gap: 20px; align-items: center; }
+@media (max-width: 460px) { .score-hero { grid-template-columns: 1fr; } }
+.ring { width: 132px; height: 132px; }
+.ring text { font-family: var(--serif); fill: var(--ink); }
+.band-name { font-family: var(--serif); font-size: 30px; line-height: 1.1; color: var(--accent); }
+.band-tag { color: var(--ink-2); }
+
+.dims { display: grid; gap: 10px; margin-top: 4px; }
+.dim { display: grid; grid-template-columns: 96px 1fr 44px; gap: 12px; align-items: center; font-size: 14px; }
+.dim .bar { height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.dim .bar > i { display: block; height: 100%; background: var(--green); }
+.dim.weak .bar > i { background: var(--accent); }
+.dim .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.dim .name { font-weight: 600; }
+.dim.weak .name { color: var(--accent); }
+
+.card { border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; background: var(--paper-2); }
+.card h3 { font-family: var(--serif); font-weight: 400; font-size: 20px; margin: 0 0 8px; }
+.quote { font-family: var(--serif); font-size: 17px; border-left: 3px solid var(--sage); padding-left: 12px; margin: 6px 0 8px; }
+.pill { display: inline-block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: var(--sage); color: var(--sage-ink); }
+.disclosure { font-size: 13.5px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 12px; }
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -2px; margin-right: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* The ask */
+.card.offer { border-color: var(--accent); border-width: 2px; }
+.card.offer .btn { display: block; width: 100%; box-sizing: border-box; text-align: center; }
+
+.steps { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.steps li { display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: start; }
+.steps li::before { counter-increment: step; content: counter(step); width: 28px; height: 28px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-weight: 600; display: grid; place-items: center; font-size: 14px; }
+</style>
+<main class="pss-wrap">
+  <div class="pss-brand"><b>Product Sense Score</b><span>Josh Atlas · Product Management Circle</span></div>
+  <section class="screen">
+    <div class="eyebrow">Product Sense Cohort</div>
+    <h1>Your seat is held.</h1>
+    <p>Thank you. Stripe is emailing your receipt now. Here is what happens next.</p>
+    <ol class="steps"><li><span>Within one business day I email you three short questions about the initiative you'll bring. That's the fit check. If the cohort isn't right for you, I say so and refund you in full.</span></li><li><span>The day the eighth seat is taken, everyone gets the six Wednesday dates. Sessions run 9:30am PT.</span></li><li><span>If the cohort doesn't fill, you get every dollar back. No forms, no follow-up required.</span></li></ol>
+    <div class="row" style="margin-top:18px">
+      <a class="btn" href="https://calendar.app.google/hNGics4Si6au7EPt8" target="_blank" rel="noopener">Rather do the fit check live? Book 30 minutes.</a>
+      <a class="link" href="../">Back to your score</a>
+    </div>
+  </section>
+</main>
+
+</body>
+</html>
