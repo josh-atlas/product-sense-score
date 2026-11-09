@@ -71,6 +71,17 @@ The worker refuses or throttles before any paid call. In order: Origin must be o
 
 Turnstile, once: Cloudflare dashboard > Turnstile > Add widget (hostnames `josh-atlas.github.io` and `joshatlas.co`, mode Managed). Put the site key in each `quizzes/<slug>/config.json` as `turnstileSiteKey` and rebuild; add the secret key to the worker as the `TURNSTILE_SECRET` secret. Until both are set, the page shows no widget and the worker skips the check. The only money cap outside this code is the monthly spend limit on the Anthropic console; set it.
 
+## Checkout (added Nov 8, 2026)
+
+The Product Sense Score results card sells the cohort directly: the button is a Stripe Payment Link, the seat line is live ("Three of eight seats left"), and the card flips to "Sold out" at the cap. Pieces:
+
+- `quizzes/product-sense-score/config.json`: `checkout` (product id `pss-cohort`, cap, value, currency, and the `thanks` page copy) and `offer` (`url` is the Payment Link; `talk` is the book-a-call line under the button; `soldOut` copy; `soldOutOverride: true` forces the sold-out state by hand). While `offer.url` is empty the button falls back to the call link, so the page is always safe to ship.
+- The page appends `prefilled_email` and `client_reference_id` (`pss-cohort_<band>_<weakest>_<source>`) to the Payment Link, fetches `GET /api/seats?product=pss-cohort` on the results screen, and fires the pixel's `Lead` (results) and `InitiateCheckout` (buy click) when `metaPixelId` is set.
+- `docs/product-sense-score/thanks/` is the page Stripe sends people to after paying (built from `src/thanks.html`). It fires the pixel's `Purchase`.
+- Worker: `POST /api/stripe-webhook` verifies the `Stripe-Signature` header with `STRIPE_WEBHOOK_SECRET`, records paid `checkout.session.completed` sessions in D1 (`purchases`, idempotent on session id) and marks `charge.refunded` rows refunded; `GET /api/seats` counts paid rows against `PSS_COHORT_CAP` (default 8).
+
+Stripe, once: Products > add "Product Sense Cohort", one-time $499. Payment Links > create from that product; under the link's options set "Limit the number of payments" to 8 (the hard stop; the page's sold-out state is the soft one), "After payment" to redirect to `https://josh-atlas.github.io/product-sense-score/product-sense-score/thanks/`, and collect the customer's name. Developers > Webhooks > add endpoint `https://quiz-api.josh-andrew-atlas.workers.dev/api/stripe-webhook` with events `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`; copy its signing secret into the worker as the `STRIPE_WEBHOOK_SECRET` secret and promote the new version. Run the `purchases` statements from `worker/schema.sql` in the D1 console. Paste the Payment Link into `offer.url`, rebuild, commit.
+
 ## Kit setup (once)
 
 1. Plan: Creator (the free plan allows one automation; this needs four).
@@ -81,7 +92,7 @@ Turnstile, once: Cloudflare dashboard > Turnstile > Add widget (hostnames `josh-
 
 ## Analytics and pixels
 
-`config.json` has `posthog.key` (free tier at posthog.com; project settings > API key) and `posthog.host`; leave the key empty to ship without analytics. PostHog gives you a funnel per question (Insights > Funnels, steps `start` then `answer` filtered by `q`) and session replays with inputs masked. The page fires these events: `start_view`, `start`, `role`, `initiative_set`, `answer` (per question), `gate_view`, `email_submitted`, `scored` (band, weakest), `results_view`, `offer_click` (band), `secondary_click` (band), `score_error`. The Meta pixel and LinkedIn Insight Tag go in the marked spot in `scripts/build.mjs` once the ad accounts exist; install them before any spend so the retargeting audiences build up.
+`config.json` has `posthog.key` (free tier at posthog.com; project settings > API key) and `posthog.host`; leave the key empty to ship without analytics. PostHog gives you a funnel per question (Insights > Funnels, steps `start` then `answer` filtered by `q`) and session replays with inputs masked. The page fires these events: `start_view`, `start`, `role`, `initiative_set`, `answer` (per question), `gate_view`, `email_submitted`, `scored` (band, weakest), `results_view`, `offer_click` or `checkout_click` (band, weakest), `talk_click`, `secondary_click` (band), `sold_out_view`, `score_error`, and `purchase_thanks` on the thanks page. Meta pixel: put the pixel id in `metaPixelId` in `config.json` and rebuild; the build injects the base code (PageView) and the page fires `Lead`, `InitiateCheckout` and `Purchase` as described under Checkout. Install it before any spend so the audiences build up. LinkedIn Insight Tag still goes in by hand in `scripts/build.mjs` if ever needed.
 
 ## The preview on claude.ai
 
