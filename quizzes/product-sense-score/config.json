@@ -1,21 +1,52 @@
 {
   "apiUrl": "https://quiz-api.josh-andrew-atlas.workers.dev/api/score",
   "turnstileSiteKey": "0x4AAAAAAFYLrj9324fByWRw",
+  "metaPixelId": "",
   "videos": {
     "reactive": "",
     "emerging": "",
     "strategic": "",
     "leader": ""
   },
+  "checkout": {
+    "product": "pss-cohort",
+    "cap": 8,
+    "value": 499,
+    "currency": "USD",
+    "thanks": {
+      "eyebrow": "Product Sense Cohort",
+      "headline": "Your seat is held.",
+      "lead": "Thank you. Stripe is emailing your receipt now. Here is what happens next.",
+      "steps": [
+        "Within one business day I email you three short questions about the initiative you'll bring. That's the fit check. If the cohort isn't right for you, I say so and refund you in full.",
+        "The day the eighth seat is taken, everyone gets the six Wednesday dates. Sessions run 9:30am PT.",
+        "If the cohort doesn't fill, you get every dollar back. No forms, no follow-up required."
+      ],
+      "callLabel": "Rather do the fit check live? Book 30 minutes.",
+      "callUrl": "https://calendar.app.google/hNGics4Si6au7EPt8",
+      "backLabel": "Back to your score",
+      "backUrl": "../"
+    }
+  },
   "offer": {
     "name": "Product Sense Cohort",
-    "when": "Six Wednesdays at 9:30am PT. Next dates to be announced.",
+    "when": "Six Wednesdays at 9:30am PT. We start the week after the eighth seat is taken, and you get the dates that day.",
     "what": "One real decision of yours a week, from the initiative you own, tested in a questions-only hot seat. The room tests your reasoning, not your roadmap: name the tension, not the feature. Your seat lands on the week of your weakest dimension. Pair rounds every week, so nothing goes untested.",
-    "seats": "Eight seats. Runs with five or more.",
+    "seats": "Eight seats",
     "price": "$499",
-    "deadline": "",
-    "button": "Book a 30-minute fit call",
-    "url": "https://calendar.app.google/hNGics4Si6au7EPt8"
+    "deadline": "Doesn't fill? Every dollar back.",
+    "button": "Take a seat, $499",
+    "url": "https://buy.stripe.com/8x2cMY2kjeCW4el5Zh6AM01",
+    "talk": {
+      "label": "Want to talk it through first? Book a 30-minute fit call.",
+      "url": "https://calendar.app.google/hNGics4Si6au7EPt8"
+    },
+    "soldOut": {
+      "button": "Sold out",
+      "text": "All eight seats are taken.",
+      "linkLabel": "Book a 30-minute call and I'll hold you a place in the next one."
+    },
+    "soldOutOverride": false
   },
   "secondary": {
     "reactive": {
